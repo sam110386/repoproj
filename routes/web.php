@@ -11,6 +11,24 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+use Illuminate\Routing\Router;
+
+Auth::routes();
+
+Route::get('/', 'HomeController@index')->name('home');
+// Route::get('/account', 'AccountController@index')->name('account');
+Route::group([
+    'prefix'        => 'account',
+    'middleware'    => 'auth',
+], function (Router $router) {
+    $router->get('/', 'AccountController@index')->name('account');
+    $router->get('/dashboard', 'AccountController@index')->name('dashboard');
+    $router->get('/profile', 'AccountController@view')->name('profile');
+    $router->post('/profile', 'AccountController@updateProfile')->name('profile-info-save');
+    $router->post('/password', 'AccountController@updatePassword')->name('profile-password-save');
+	$router->get('/forms', 'FormsController@userFormList');
+    $router->get('/form/{key?}', 'FormsController@userForm');
 });
