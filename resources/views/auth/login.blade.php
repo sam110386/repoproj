@@ -3,7 +3,7 @@
 <!--div class="login-page"-->
 	<div class="login-box ">
 		<div class="login-box-body panel-body ">
-			<p class="login-box-msg">Sign in to start your session</p>
+			<p class="login-box-msg">Sign In</p>
 
 			<form action="{{ route('login') }}" method="post">
 				{{ csrf_field() }}
@@ -52,8 +52,7 @@
 	</div-->
 	<a href="{{ route('password.request') }}">
 		Forgot Your Password?
-	</a><br>
-	<a href="{{ route('register') }}" class="text-center">Don't have account</a>
+	</a>
 	
 </div>
 <!-- /.form-box -->

@@ -11,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name' => 'INS REPORT',
+    'name' => 'COBAT MIS',
 
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => 'INS REPORT',
+    'logo' => 'COBAT MIS',
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini' => 'INS',
+    'logo-mini' => 'CM',
 
     /*
     |--------------------------------------------------------------------------
@@ -129,11 +129,11 @@ return [
     'upload' => [
 
         // Disk in `config/filesystem.php`.
-        'disk' => 'admin',
+        'disk' => 'user_uploads',
 
         // Image and file upload path under the disk above.
         'directory' => [
-            'image' => 'images',
+            'image' => '',
             'file'  => 'files',
         ],
     ],
@@ -173,6 +173,8 @@ return [
         'role_users_table'       => 'admin_role_users',
         'role_permissions_table' => 'admin_role_permissions',
         'role_menu_table'        => 'admin_role_menu',
+        'institute_table' => 'institutes',
+        'institute_model' => App\Models\Institute::class,
     ],
 
     /*
@@ -227,7 +229,7 @@ return [
     |    "skin-red", "skin-red-light", "skin-black", "skin-black-light".
     |
     */
-    'skin' => 'skin-red-light',
+    'skin' => 'skin-blue',
 
     /*
     |--------------------------------------------------------------------------

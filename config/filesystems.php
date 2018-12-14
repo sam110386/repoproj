@@ -45,7 +45,11 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app'),
+            'root' => storage_path('app/public'),
+        ],
+        'admin' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/admin'),
         ],
 
         'public' => [
@@ -65,10 +69,12 @@ return [
         'public_uploads' => [
             'driver' => 'local',
             'root'   => public_path() . '/uploads/public',
+            'url' => env('APP_URL').'/uploads'
         ],
         'user_uploads' => [
             'driver' => 'local',
             'root'   => public_path() . '/uploads/user',
+            'url' => env('APP_URL').'/uploads/user',
         ],
 
 
