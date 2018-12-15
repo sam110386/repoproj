@@ -18,7 +18,7 @@ class CreateTableInstitutes extends Migration
             $table->string('name');
             $table->string('username',20)->unique();
             $table->string('email')->unique();
-            $table->string('password',100);
+            $table->string('password',255);
             $table->string('phone',20)->nullable();
             $table->string('logo',60)->nullable();
             $table->string('address',255)->nullable();

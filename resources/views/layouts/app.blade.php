@@ -128,36 +128,9 @@
 							<i class="fa fa-user"></i> <span>Profile</span>
 						</a>
 					</li>
-					<li class="treeview">
-						<a href="#">
-							<i class="fa fa-edit"></i> <span>Forms</span>
-							<span class="pull-right-container">
-								<i class="fa fa-angle-left pull-right"></i>
-							</span>
-						</a>
-						<ul class="treeview-menu">
-							<li><a href="pages/forms/general.html"><i class="fa fa-circle-o"></i> General Elements</a></li>
-							<li><a href="pages/forms/advanced.html"><i class="fa fa-circle-o"></i> Advanced Elements</a></li>
-							<li><a href="pages/forms/editors.html"><i class="fa fa-circle-o"></i> Editors</a></li>
-						</ul>
-					</li>
+					
 					<li><a href="{{ route('logout')}}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fa fa-sign-out"></i> <span>Sign Out</span></a></li>
-					<li class="header">HELP</li>
-					<li><a href="#"><i class="fa fa-book"></i> <span>Documentation</span></a></li>
-					<li>
-						<!-- search form -->
-						<form action="#" method="get" class="sidebar-form">
-							<div class="input-group">
-								<input type="text" name="q" class="form-control" placeholder="Search...">
-								<span class="input-group-btn">
-									<button type="submit" name="" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-									</button>
-								</span>
-							</div>
-						</form>
-						<!-- /.search form -->
-
-					</li>
+					
 				</ul>
 			</section>
 			<!-- /.sidebar -->
@@ -210,11 +183,7 @@
 		</div>
 		<!-- /.content-wrapper -->
 		<footer class="main-footer">
-			<div class="pull-right hidden-xs">
-				<b>Version</b> 2.4.0
-			</div>
-			<strong>Copyright &copy; 2014-2016 <a href="https://adminlte.io">Almsaeed Studio</a>.</strong> All rights
-			reserved.
+			
 		</footer>
 		<!-- /.control-sidebar -->
 	<!-- Add the sidebar's background. This div must be placed

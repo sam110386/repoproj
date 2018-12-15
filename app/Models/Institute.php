@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
-class Institute extends Model
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+class Institute extends Authenticatable
 {
+    use Notifiable;
+
     protected $fillable = [
         'name',
         'phone',
@@ -23,6 +26,10 @@ class Institute extends Model
         'boardmember_female'
     ];
 
+
+protected $hidden = [
+        'password', 'remember_token',
+    ];
     /**
      * Create a new Eloquent model instance.
      *
@@ -39,42 +46,4 @@ class Institute extends Model
         parent::__construct($attributes);
     }
 
-    
-
-    
-    /**
-     * Check user has permission.
-     *
-     * @param $permission
-     *
-     * @return bool
-     */
-    public function can(string $permission) : bool
-    {
-        return $this->permissions()->where('slug', $permission)->exists();
-    }
-
-    /**
-     * Check user has no permission.
-     *
-     * @param $permission
-     *
-     * @return bool
-     */
-    public function cannot(string $permission) : bool
-    {
-        return !$this->can($permission);
-    }
-
-    /**
-     * Detach models from the relationship.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($model) {});
-    }
 }

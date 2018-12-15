@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 
-use App\User;
+use App\Models\Institute;
 class AccountController extends Controller
 {
 	private $profile;
@@ -30,8 +30,8 @@ class AccountController extends Controller
 	public function index()
 	{
 		$profile = Auth::user();
-		if(Storage::disk('user_uploads')->exists($profile->profile_picture)){
-			$profilePic = '/uploads/user/' . $profile->profile_picture ;
+		if(Storage::disk('user_uploads')->exists($profile->logo)){
+			$profilePic = '/uploads/user/' . $profile->logo ;
 		}else{
 			$profilePic = '/img/avatar5.png';
 		}
@@ -43,8 +43,8 @@ class AccountController extends Controller
 
 	public function view(){
 		$profile = Auth::user();
-		if(Storage::disk('user_uploads')->exists($profile->profile_picture)){
-			$profilePic = '/uploads/user/' . $profile->profile_picture ;
+		if(Storage::disk('user_uploads')->exists($profile->logo)){
+			$profilePic = '/uploads/user/' . $profile->logo ;
 		}else{
 			$profilePic = '/img/avatar5.png';
 		}
@@ -58,19 +58,18 @@ class AccountController extends Controller
 		$valid = request()->validate([
 			'name' => 'required',
 			'phone' => 'nullable|numeric|digits_between:7,15',
+			'email' => 'required|string|email|max:255',
 			'profile_picture' => 'nullable|image|max:1000|dimensions:min_width=150,min_height=150|mimes:jpeg,png,gif'
 		]);
-
+		$data=$request->all();
 		$uploadedFile = $request->file('profile_picture');
 		if($uploadedFile && $uploadedFile->isValid()){
 			$filename = time().$uploadedFile->getClientOriginalName();
 			$file = Storage::disk('user_uploads')->putFileAs('',$uploadedFile,$filename);
-			$data['profile_picture'] = $file;
+			$data['logo'] = $file;
 		}
-
-		$data['name'] = $request->name;
-		$data['phone'] = $request->phone;
-		if(User::findOrFail(Auth::user()->id)->update($data)){
+		//print_r($data);echo Auth::user()->id;die;
+		if(Institute::findOrFail(Auth::user()->id)->update($data)){
 			$returnKey = 'success';
 			$returnMsg = 'Profile has been updated';
 		}else{

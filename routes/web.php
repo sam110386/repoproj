@@ -17,7 +17,7 @@
 use Illuminate\Routing\Router;
 
 Auth::routes();
-
+Auth::routes(['register' => false]);
 Route::get('/', 'HomeController@index')->name('home');
 // Route::get('/account', 'AccountController@index')->name('account');
 Route::group([

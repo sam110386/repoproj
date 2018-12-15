@@ -14,7 +14,8 @@ use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use App\Helpers\CommonMethod;
 use Encore\Admin\Admin;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 class InstitutesController extends Controller
 {
     
@@ -50,13 +51,45 @@ class InstitutesController extends Controller
     public function store(Request $request)
     {   
         $valid = request()->validate([
-			'name' => 'required',
-            'phone' => 'required',
-            'email' => 'required',
-            'password'=>'required',
-            'username'=>'required'
+			'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:18',
+            'email' => 'required|string|email|max:255|unique:institutes',
+            'password'=>'required|string|min:6|confirmed',
+            'username'=>'required|string|max:25|unique:institutes',
+            'logo' => 'nullable|image|max:1000|dimensions:min_width=150,min_height=150|mimes:jpeg,png,gif'
         ]);
-        if(Institute::create($request->all())){
+        $data=$request->all();
+        if(empty($data['client_male'])){
+            $data['client_male']=0;
+        }
+        if(empty($data['client_female'])){
+            $data['client_female']=0;
+        }
+        if(empty($data['staff_male'])){
+            $data['staff_male']=0;
+        }
+        if(empty($data['staff_female'])){
+            $data['staff_female']=0;
+        }
+        if(empty($data['boardmember_male'])){
+            $data['boardmember_male']=0;
+        }
+        if(empty($data['boardmember_female'])){
+            $data['boardmember_female']=0;
+        }
+        if(!empty($data['password'])){
+            $data['password']=bcrypt($data['password']);
+        }
+        if($institute=Institute::create($data)){
+            /**upload and save image***/
+            $uploadedFile = $request->file('logo');
+            if($uploadedFile && $uploadedFile->isValid()){
+                $filename = time().$uploadedFile->getClientOriginalName();
+                $file = Storage::disk('user_uploads')->putFileAs('',$uploadedFile,$filename);
+                $data['logo'] = $file;
+                Institute::findOrFail($institute->id)->update($data);
+            }
+            /**upload and save image end here***/
             admin_success('Success','Institute has been successfully added!');
             return redirect()->route('Institutes.index');
         }else{
@@ -74,12 +107,26 @@ class InstitutesController extends Controller
     public function update($id,Request $request){
         
         $institute = request()->validate([
-            'name' => 'required',
-            'phone' => 'required',
-            'email' => 'required',
-            'username'=>'required'
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:18',
+            'email' => 'required|string|email|max:255',
+            'password'=>'required|string|min:6|confirmed',
+            'username'=>'required|string|max:25',
+            'logo' => 'nullable|image|max:1000|dimensions:min_width=150,min_height=150|mimes:jpeg,png,gif'
         ]);
-        if(Institute::findOrFail($id)->update($request->all())){
+        $data=$request->all();
+        if(!empty($data['password'])){
+            $data['password'] = bcrypt($data['password']);
+        }
+        /**upload and save image***/
+        $uploadedFile = $request->file('logo');
+        if($uploadedFile && $uploadedFile->isValid()){
+            $filename = time().$uploadedFile->getClientOriginalName();
+            $file = Storage::disk('user_uploads')->putFileAs('',$uploadedFile,$filename);
+            $data['logo'] = $file;
+        }
+        /**upload and save image end here***/
+        if(Institute::findOrFail($id)->update($data)){
             admin_success('Success','Institute has been successfully updated!');
             return redirect()->route('Institutes.index');
         }else{
@@ -159,57 +206,32 @@ class InstitutesController extends Controller
         
         $show = new Show(Institute::findOrFail($id));
 
-        $show->id('ID');
         $show->name(trans('Name'));
+        $show->username(trans('username'));
+        $show->email(trans('Email'));
         $show->phone(trans('Phone'));
-        $show->user_type(trans('Client Type'))->using([1=>"Individual",2=>"Company"]);
-        $show->gender(trans('Gender'))->using(['M' => 'Male', 'F' => 'Female']);
-        $show->language(trans('Language'))->using(['en' => 'English']);
-
         // ADDRESS INFORMATION
         $show->address(trans('Street Address'));
         $show->region(trans('Region'));
         $show->district(trans('District'));
         $show->ward(trans('Ward'));
-        $show->zipcode(trans('Zipcode'));
+        $show->zipcode(trans('Zip Code'));
 
-        // REGISTRATION INFORMATION
-        $show->registration_number(trans('Registration Number'));
-        $show->registration_date(trans('Registration Date'))->as(function($date){
-            return CommonMethod::formatDateWithTime($date);
-        });
-
-        // TAX INFORMATION
-        $show->return_due_date(trans('Returns Due (Expiration)'))->as(function($date){
-            return CommonMethod::formatDate($date);
-        });
-
-        $show->motor_vehicle_due_date(trans('Motor Vehicle Due (Expiration)'))->as(function($date){
-            return CommonMethod::formatDate($date);
-        });
-        $show->driving_licence_due_date(trans('Driving Licence Due (Expiration)'))->as(function($date){
-            return CommonMethod::formatDate($date);
-        });              
-        // $show->taxcategory(trans('Tax Category'))->using([['Returns'=>"Returns",'Motor Vehicle' => 'Motor Vehicle','Driving Licence' => 'Driving Licence']]);
-
-        $show->exempt(trans('exempt'))->using([1=>"Yes",0 => 'No']);
-        $show->tax_type(trans('Tax Type'))->using(['VAT'=>"VAT",'non-VAT' => 'non-VAT']);
-        $show->filling_type(trans('Filling Type'))->using(['regular'=>"Regular",'lamp-sum' => 'Lamp sum']);
-        $show->filling_period(trans('Filling Period'))->using(['annual'=>"Annual",'quarterly' => 'Quarterly']);
-        $show->filling_currency(trans('Filling Currency'))->using(['TSH'=>"TSH",'USD' => 'USD']);
+        $show->client_male(trans('Client Male'));
+        $show->client_female(trans('Client Female'));
+        $show->staff_male(trans('Staff Male'));
+        $show->staff_female(trans('Staff Female'));
+        $show->boardmember_male(trans('Board Member Male'));
+        $show->boardmember_female(trans('Board Member Female'));
         
-        
-        $show->total_amount(trans('Total Amount'));
-        $show->penalty_amount(trans('Penalty Amount'));
-        
-        $show->certificate_printed(trans('Certificate Printed'))->using(['0' => 'No', '1' => 'Yes']);
-        
-
         $show->status(trans('Status'))->using(['0' => 'Inactive', '1' => 'Active']);
+        $show->logo()->image();
         $show->created_at(trans('admin.created_at'))->as(function($date){
             return CommonMethod::formatDateWithTime($date);
         });
-        
+        $show->updated_at(trans('Last Updated'))->as(function($date){
+            return CommonMethod::formatDate($date);
+        });
 
         return $show;
     }
@@ -281,9 +303,7 @@ SCRIPT;
             
             $row->width(6)->password('password', trans('admin.password'))->rules('required|confirmed')->placeholder('Password');
             $row->width(6)->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
-                ->default(function ($form) {
-                    return $form->model()->password;
-                })->placeholder('Confirm Password');
+                ->placeholder('Confirm Password');
 
         },$form);
 
@@ -341,7 +361,7 @@ SCRIPT;
         $form->row(function ($row) use($form) {
             $row->width(1)->html();
             $row->width(2)->html('<strong>Logo</strong>');
-            $row->width(4)->image('logo', '')->crop(300, 300, [300, 300])->removable()->uniqueName();
+            $row->width(4)->image('logo', '');//->crop(300, 300, [300, 300])->removable()->uniqueName();
 
         },$form);
         $form->footer(function ($footer) {

@@ -26,5 +26,5 @@
 </style>
 
 <div class="title">
-    INS REPORT
+    COBAT MIS
 </div>
