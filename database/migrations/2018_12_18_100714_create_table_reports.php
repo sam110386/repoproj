@@ -13,7 +13,7 @@ class CreateTableReports extends Migration
      */
     public function up()
     {
-        Schema::table('reports', function (Blueprint $table) {
+        Schema::create('reports', function (Blueprint $table) {
             $table->increments('id'); 
             $table->integer('institute_id'); 
             $table->string('report_category');                       
