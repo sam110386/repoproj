@@ -22,7 +22,6 @@ class ReportsController extends Controller
 		//$this->middleware('auth');
 		$this->profile = Auth::user();
 	}
-
 	/**
 	 * Show the application dashboard.
 	 *
