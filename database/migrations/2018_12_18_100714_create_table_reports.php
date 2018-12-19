@@ -14,10 +14,10 @@ class CreateTableReports extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->increments('id'); 
-            $table->integer('institute_id'); 
+            $table->integer('institute_id')->unsigned(); 
             $table->string('report_category');                       
-            $table->integer('submission_period',3);
-            $table->integer('submission_quater',4);
+            $table->integer('submission_period')->unsigned();
+            $table->integer('submission_quater')->unsigned();
             $table->year('report_year');
             $table->decimal('total_capital',8, 2);
             $table->decimal('total_assest',8, 2);
