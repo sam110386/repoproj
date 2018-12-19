@@ -76,6 +76,11 @@ return [
             'root'   => public_path() . '/uploads/user',
             'url' => env('APP_URL').'/uploads/user',
         ],
+        'user_docuploads' => [
+            'driver' => 'local',
+            'root'   => public_path() . '/uploads/user/doc',
+            'url' => env('APP_URL').'/uploads/user/doc',
+        ],
 
 
     ],

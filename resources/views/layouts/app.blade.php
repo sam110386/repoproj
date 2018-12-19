@@ -128,7 +128,11 @@
 							<i class="fa fa-user"></i> <span>Profile</span>
 						</a>
 					</li>
-					
+					<li  class="@if(Route::is('report')) active @endif">
+						<a href="{{ route('report') }}">
+							<i class="fa fa-user"></i> <span>Reports</span>
+						</a>
+					</li>
 					<li><a href="{{ route('logout')}}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fa fa-sign-out"></i> <span>Sign Out</span></a></li>
 					
 				</ul>

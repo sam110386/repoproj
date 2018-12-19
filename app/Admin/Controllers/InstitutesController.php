@@ -12,10 +12,13 @@ use Encore\Admin\Layout\Row;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Encore\Admin\Widgets\Tab;
 use App\Helpers\CommonMethod;
 use Encore\Admin\Admin;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Report;
+use App\Models\ReportFiles;
 class InstitutesController extends Controller
 {
     
@@ -146,11 +149,16 @@ class InstitutesController extends Controller
      * @return Content
      */
     public function show($id, Content $content)
-    {
+    {   
+        $tab = new Tab();
+        
+        $tab->add('Account Details', $this->personaldetail($id)->render());
+        $tab->add('Institute Details', $this->institutedetail($id)->render());
+        $tab->add('Reports', $this->reportgrid($id)->render());
          $content
             ->header(trans('Institutes'))
             ->description(trans('admin.detail'))
-            ->body($this->detail($id));
+            ->body($tab);
         $content->breadcrumb(
                 ['text' => 'Institute', 'url' => '/institutes'],
                 ['text' => Institute::find($id)->name]
@@ -201,12 +209,15 @@ class InstitutesController extends Controller
      *
      * @return Show
      */
-    protected function detail($id)
+    protected function personaldetail($id)
     {
         
         $show = new Show(Institute::findOrFail($id));
-
+        $show->panel()
+            ->style('danger')
+            ->title('Account Details');
         $show->name(trans('Name'));
+        
         $show->username(trans('username'));
         $show->email(trans('Email'));
         $show->phone(trans('Phone'));
@@ -216,16 +227,7 @@ class InstitutesController extends Controller
         $show->district(trans('District'));
         $show->ward(trans('Ward'));
         $show->zipcode(trans('Zip Code'));
-
-        $show->client_male(trans('Client Male'));
-        $show->client_female(trans('Client Female'));
-        $show->staff_male(trans('Staff Male'));
-        $show->staff_female(trans('Staff Female'));
-        $show->boardmember_male(trans('Board Member Male'));
-        $show->boardmember_female(trans('Board Member Female'));
-        
         $show->status(trans('Status'))->using(['0' => 'Inactive', '1' => 'Active']);
-        $show->logo()->image();
         $show->created_at(trans('admin.created_at'))->as(function($date){
             return CommonMethod::formatDateWithTime($date);
         });
@@ -235,6 +237,22 @@ class InstitutesController extends Controller
 
         return $show;
     }
+    protected function institutedetail($id)
+    {
+        
+        $show = new Show(Institute::findOrFail($id));
+        $show->panel()
+            ->title('Institute Details');
+        $show->logo()->image();
+        $show->client_male(trans('Client Male'));
+        $show->client_female(trans('Client Female'));
+        $show->staff_male(trans('Staff Male'));
+        $show->staff_female(trans('Staff Female'));
+        $show->boardmember_male(trans('Board Member Male'));
+        $show->boardmember_female(trans('Board Member Female'));
+        
+        return $show;
+    }
 
     protected function grid()
     {
@@ -242,13 +260,15 @@ class InstitutesController extends Controller
         $grid = new Grid(new Institute());
         $grid->disableExport();
         $grid->id('ID')->sortable();
-        $grid->name(trans('Name'));
-        $grid->email(trans('email'));
-        $grid->phone(trans('Phone'))->sortable();
-        $grid->status(trans('Status'))->display(function($status){
-            return ($status) ? 'Active' : 'Inative';
-        });     
-        $grid->created_at(trans('Created'))->sortable()->display(function($date){
+        $grid->name(trans('Institute Name'));
+        $grid->client_male(trans('Client(M)'));
+        $grid->client_female(trans('Client(F)'));
+        $grid->staff_male(trans('Staff(M)'));
+        $grid->staff_female(trans('Staff(F)'));
+        $grid->boardmember_male(trans('Board Member(M)'));
+        $grid->boardmember_female(trans('Board Member(F)'));
+        
+        $grid->updated_at(trans('Updated'))->sortable()->display(function($date){
             return CommonMethod::formatDateWithTime($date);
         });
 
@@ -390,5 +410,51 @@ SCRIPT;
         }else{
             return Institute::all()->paginate(null, ['id', 'name as text']);
         }
+    }
+
+
+    protected function reportgrid($id)
+    {
+        
+        $grid = new Grid(new Report());
+        $grid->model()->where('institute_id','=',$id);
+        $grid->disableExport();
+        $grid->disableFilter();
+        $grid->id('ID');
+        $grid->report_category(trans('report_category'));
+        $grid->submission_period(trans('submission_period'));
+          
+        $grid->created_at(trans('Created'))->display(function($date){
+            return CommonMethod::formatDateWithTime($date);
+        });
+
+        $grid->actions(function (Grid\Displayers\Actions $actions) {
+            $actions->disableDelete();
+            // $actions->resource = 'client/delete';
+            // if ($actions->getKey() == 1) {
+            //     $actions->disableDelete();
+            // }
+        });
+        $grid->filter(function($filter){
+            // Remove the default id filter
+           $filter->disableIdFilter();
+             /*$filter->column(1/2, function ($filter) {
+            // Add a column filter
+                $filter->like('name', 'Name');
+                $filter->like('phone', 'Phone');
+                $filter->like('email', 'Email');
+                $filter->equal('status')->select(['0' => 'InActive','1'=>'Active']);
+            });
+            $filter->column(1/2, function ($filter) {
+                $filter->between('created_at')->datetime();
+            });*/
+        });
+        $grid->tools(function (Grid\Tools $tools) {
+            $tools->batch(function (Grid\Tools\BatchActions $actions) {
+                $actions->disableDelete();
+            });
+        });
+
+        return $grid;
     }
 }
