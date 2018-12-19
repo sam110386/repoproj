@@ -29,6 +29,6 @@ Route::group([
     $router->get('/profile', 'AccountController@view')->name('profile');
     $router->post('/profile', 'AccountController@updateProfile')->name('profile-info-save');
     $router->post('/password', 'AccountController@updatePassword')->name('profile-password-save');
-	$router->get('/forms', 'FormsController@userFormList');
-    $router->get('/form/{key?}', 'FormsController@userForm');
+    $router->get('/report', 'ReportsController@add')->name('report-add');	
+    $router->post('/report', 'ReportsController@saveData')->name('report-info-save');	
 });
