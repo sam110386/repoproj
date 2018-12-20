@@ -22,7 +22,15 @@
 					<div class="form-group ">
 						<label for="submission_period" class="col-sm-2 control-label">Submission Period</label>
 						<div class="col-sm-8">
+							@if ($report->report_category=="Monthly")							
 							{{$report->submission_period}}
+							@endif
+							@if($report->report_category=="Quaterly")
+							{{'Q'.$report->submission_quater}}
+							@endif
+							@if($report->report_category=="Audited")
+							{{$report->report_year}}
+							@endif
 						</div>
 					</div>
 					<div class="form-group ">

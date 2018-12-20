@@ -45,6 +45,15 @@
 									<tr>
 										<td>{{$i++}}</td>
 										<td>{{$report->report_category}}</td>
+										@if ($report->report_category=="Monthly")							
+										<td>{{$report->submission_period}}</td>
+										@endif
+										@if($report->report_category=="Quaterly")
+										<td>{{'Q'.$report->submission_quater}}</td>
+										@endif
+										@if($report->report_category=="Audited")
+										<td>{{$report->report_year}}</td>
+										@endif
 										<td>{{$report->submission_period}}</td>
 										<td>{{$report->total_capital}}</td>
 										<td>{{$report->total_assest}}</td>
