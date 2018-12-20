@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Report;
 use App\Models\ReportsFiles;
+use Mail;
 
 class ReportsController extends Controller
 {
@@ -93,6 +94,7 @@ class ReportsController extends Controller
 		$profile['profile_picture'] = $profilePic;
 		$pageData = ['title' => 'Reports','profile' => $profile];
 		$report = Report::where('id','=',$id)->where('institute_id','=',$profile->id)->first();
+		
 		$reportfiles=ReportsFiles::where('report_id','=',$id)->get();
 		return view(
 			'Report.view',
@@ -119,8 +121,11 @@ class ReportsController extends Controller
 	}
 
 	public function save(Request $request){
+		
 		$profile = Auth::user();
-		$data=$request->all();		
+		
+		$data=$request->all();	
+			
 		$fileName = null;
 		$valid = request()->validate([
 			'report_category' => 'required',
@@ -135,13 +140,88 @@ class ReportsController extends Controller
 			'return_equity' => 'required|nullable|numeric',			
 			//'files' => 'mimes:jpeg,png,gif,pdf,doc,docx'
 		]);	
+		
+		 $submission_period = ($data['report_category']=="Monthly")?$data['submission_period']:NULL;
+		 $submission_quater = ($data['report_category']=="Quaterly")?$data['submission_period']:NULL;		
+		 $report_year = ($data['report_category']=="Audited")?$data['submission_period']:NULL;
 			
+		switch ($submission_period):
+				case 1:
+					$subm_period = "January";
+					break;
+				case 2:
+					$subm_period =  "February";
+					break;
+				case 3:
+					$subm_period = "March";
+					break;				
+				case 4:
+					$subm_period = "April";
+					break;
+				case 5:
+					$subm_period = "May";
+					break;
+				case 6:
+					$subm_period = "June";
+					break;
+				case 7:
+					$subm_period = "July";
+					break;
+				case 8:
+					$subm_period = "August";
+					break;
+				case 9:
+					$subm_period = "September";
+					break;
+				case 10:
+					$subm_period = "October";
+					break;
+				case 11:
+					$subm_period = "November";
+					break;
+				case 12:
+				$subm_period = "December";
+					break;
+				default:
+					$subm_period = "";
+			endswitch;	
+			
+		
+		
+		switch ($submission_quater):
+				case 1:
+					$subm_quater = "Q1";
+					break;
+				case 2:
+					$subm_quater = "Q2";
+					break;
+				case 3:
+					$subm_quater = "Q3";
+					break;
+				case 4:
+					$subm_quater = "Q4";
+					break;	
+				default:
+					$subm_quater = "";
+		endswitch;	
+		
+		if($subm_period ){
+			$emailSubmReport  = $subm_period;				
+		}else if($subm_quater){
+			$emailSubmReport  = $subm_quater;
+			}elseif($report_year){
+				$emailSubmReport  = $report_year;				
+				}
+		
+		
 		$report = new Report;
 		$report->institute_id =$profile->id;
 		$report->report_category = $data['report_category'];
-		$report->submission_period = $data['submission_period'];
+		$report->submission_period = $submission_period ;
+		$report->submission_quater = $submission_quater ;
+		$report->report_year = $report_year ;
 		$report->total_capital = $data['total_capital'];
-		$report->total_assest = $data['total_assest'];
+		$report->total_assest  = $data['total_assest'];
 		$report->total_liability = $data['total_liability'];
 		$report->loan_advance = $data['loan_advance'];
 		$report->customer_deposits = $data['customer_deposits'];
@@ -162,14 +242,34 @@ class ReportsController extends Controller
 						$reportFiles->report_id =  $report->id;				 
 						$reportFiles->filename = $file;
 						$reportFiles->save(); 		
-					}	
-				
+					}					
 				}
-			}		 
+			}
+			$userEmail  = $profile->email;
+			$userName  = $profile->name;
+			Mail::send('emails.report-success-email',
+			   array(
+				   'name' => $userName,
+				   'email' => $userEmail,
+				   'profile' => $profile,
+				   'report_category' => $data['report_category'],
+				   'submission_period' => $emailSubmReport,
+				   'total_capital' => $data['total_capital'],
+				   'total_assest' => $data['total_assest'],
+				   'total_liability' => $data['total_liability'],
+				   'loan_advance' => $data['loan_advance'],
+				   'customer_deposits' => $data['customer_deposits'],
+				   'profit_before_tax' => $data['profit_before_tax'],
+				   'return_average_assets' => $data['return_average_assets'],
+				   'return_equity' => $data['return_equity']
+			   ), function($message) use($profile)
+		   {
+			   $message->from($profile->email);
+			   $message->to('pradeep001.thakur@gmail.com', 'Admin')->subject('Submit Report');
+		   });		 
 		}
-
 		
-		return redirect('report')->with('success','Report submitted successfully');			
+		return redirect('account/report')->with('success','Report submitted successfully');			
 	}
 	
 	/**

@@ -7,7 +7,6 @@
 				<h3 class="box-title">Report Submission Information</h3>
 			</div>	
 			<div class="box-body box-profile">
-
 				
 				<p>&nbsp;</p>
 				<form class="form-horizontal" action="{{ route('report-info-save') }}" method="POST" enctype="multipart/form-data"  >
@@ -17,10 +16,10 @@
 							<div class="form-group {{ $errors->has('report_category') ? ' has-error' : '' }}">
 								<label for="name" class="col-sm-5 control-label">Report Category</label>
 								<div class="col-sm-7">							
-									<select class="form-control m-bot15" name="report_category">								  
-										   <option value="Monthly" {{(old('report_category')=='Monthly')?'slected':''}}>Monthly</option>
-										   <option value="Quaterly" {{(old('report_category')=='Quaterly')?'slected':''}}>Quaterly</option>
-										   <option value="Audited" {{(old('report_category')=='Audited')?'slected':''}}>Audited</option>								 
+									<select class="form-control m-bot15" id="report_category" name="report_category">	
+										   <option value="Monthly" {{(old('report_category')=='Monthly')?'selected':''}}>Monthly</option>
+										   <option value="Quaterly" {{(old('report_category')=='Quaterly')?'selected':''}}>Quaterly</option>
+										   <option value="Audited" {{(old('report_category')=='Audited')?'selected':''}}>Audited</option>								 
 										</select>
 									@if ($errors->has('report_category'))
 									<span class="help-block">
@@ -35,19 +34,21 @@
 								<label for="submission_period" class="col-sm-5 control-label">Submission Period</label>
 								<div class="col-sm-7">
 									<div id="show1">
-									<select class="form-control m-bot15" name="submission_period">								  
-										   <option value="1" {{(old('submission_period')=='1')?'slected':''}}>January</option>
-										   <option value="2" {{(isset($report) && $report->submission_period=='2')?'slected':''}}>February</option>
-										   <option value="3" {{(old('submission_period')=='3')?'slected':''}}>March</option>	
-										   <option value="4" {{(old('submission_period')=='4')?'slected':''}}>April</option>	
-										   <option value="5" {{(old('submission_period')=='5')?'slected':''}}>May</option>	
-										   <option value="6" {{(old('submission_period')=='36')?'slected':''}}>June</option>	
-										   <option value="7" {{(old('submission_period')=='7')?'slected':''}}>July</option>	
-										   <option value="8" {{(old('submission_period')=='8')?'slected':''}}>August</option>	
-										   <option value="9" {{(old('submission_period')=='9')?'slected':''}}>September</option>	
-										   <option value="10" {{(old('submission_period')=='10')?'slected':''}}>October</option>	
-										   <option value="11" {{(old('submission_period')=='11')?'slected':''}}>November</option>	
-										   <option value="12" {{(old('submission_period')=='12')?'slected':''}}>December</option>								 
+									<select class="form-control m-bot15" id="submission_period" name="submission_period">									  
+										   <option value=""  >Select</option>
+										   <option value="1" {{(old('submission_period')=='1')?'selected':''}}>January</option>
+										   <option value="2" {{(isset($report) && $report->submission_period=='2')?'selected':''}}>February</option>
+										   <option value="3" {{(old('submission_period')=='3')?'selected':''}}>March</option>	
+										   <option value="4" {{(old('submission_period')=='4')?'selected':''}}>April</option>	
+										   <option value="5" {{(old('submission_period')=='5')?'selected':''}}>May</option>	
+										   <option value="6" {{(old('submission_period')=='6')?'selected':''}}>June</option>	
+										   <option value="7" {{(old('submission_period')=='7')?'selected':''}}>July</option>	
+										   <option value="8" {{(old('submission_period')=='8')?'selected':''}}>August</option>	
+										   <option value="9" {{(old('submission_period')=='9')?'selected':''}}>September</option>	
+										   <option value="10" {{(old('submission_period')=='10')?'selected':''}}>October</option>	
+										   <option value="11" {{(old('submission_period')=='11')?'selected':''}}>November</option>	
+										   <option value="12" {{(old('submission_period')=='12')?'selected':''}}>December</option>								 
+										 
 										</select>
 									</div>													
 									@if ($errors->has('submission_period'))
