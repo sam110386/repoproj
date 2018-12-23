@@ -1,5 +1,3 @@
-@extends('layouts.app')
-@section('content')
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-primary">	
@@ -9,7 +7,7 @@
 			<div class="box-body box-profile">
 				
 				<p>&nbsp;</p>
-				<form class="form-horizontal" action="{{ route('report-info-save') }}" method="POST" enctype="multipart/form-data"  >
+				<form class="form-horizontal" action="" method="POST" enctype="multipart/form-data"  >
 					{{ csrf_field() }}
 					<div class="row">
 						<div class="col-md-6">		
@@ -184,7 +182,7 @@
 						<div class="col-sm-offset-3 col-sm-2">	
 							<div class="form-group">
 
-								<a href="{{ route('report') }}" class=" btn bg-black" >
+								<a href="/admin/reports" class=" btn bg-black" >
 									<i class="fa fa-arrow-left"></i>
 									<span>Back</span>
 								</a>
@@ -206,5 +204,43 @@
 	</div>
 </div>	
 </div>
+<script type="text/javascript">
+	Jquery(document).ready(function(){
+		Jquery("#report_category").change(function() {
+		    var el = Jquery(this) ;    
+		    if(el.val() === "Monthly" ) {
+				Jquery('#submission_period').find('option:not(:first)').remove();
+				Jquery("#submission_period").append("<option value='1'>January</option>");
+				Jquery("#submission_period").append("<option value='2'>February</option>");
+				Jquery("#submission_period").append("<option value='3'>March</option>");
+				Jquery("#submission_period").append("<option value='4'>April</option>");			
+				Jquery("#submission_period").append("<option value='5'>May</option>");
+				Jquery("#submission_period").append("<option value='6'>June</option>");
+				Jquery("#submission_period").append("<option value='7'>July</option>");
+				Jquery("#submission_period").append("<option value='8'>Agust</option>");		
+				Jquery("#submission_period").append("<option value='9'>September</option>");
+				Jquery("#submission_period").append("<option value='10'>October</option>");
+				Jquery("#submission_period").append("<option value='11'>November</option>");
+				Jquery("#submission_period").append("<option value='12'>December</option>");	
+		    }
+		    else if(el.val() === "Quaterly" ) {		
+				Jquery('#submission_period').find('option:not(:first)').remove();
+		        Jquery("#submission_period").append("<option value='1'>Q1</option>");
+		        Jquery("#submission_period").append("<option value='2'>Q2</option>");
+		        Jquery("#submission_period").append("<option value='3'>Q3</option>");
+		        Jquery("#submission_period").append("<option value='4'>Q4</option>");
+		    }
+		    else if(el.val() === "Audited" ) {
+		        Jquery('#submission_period').find('option:not(:first)').remove();
+		        var today = new Date();
+		        var years=today.getFullYear();
+		        for(var i=(years-20);i<=years;i++){
+		            Jquery("#submission_period").append("<option value='"+i+"'>"+i+"</option>");
+		        }
+		        
+		    }
+	  
+	  });
+	});
+</script>
 
-@endsection

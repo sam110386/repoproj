@@ -43,7 +43,7 @@
 									@php $i=1; @endphp
 									@foreach($reports as $report)
 									<tr>
-										<td>{{$i++}}</td>
+										<td>{{$report->id}}</td>
 										<td>{{$report->report_category}}</td>
 										@if ($report->report_category=="Monthly")							
 										<td>{{$report->submission_period}}</td>
@@ -54,7 +54,6 @@
 										@if($report->report_category=="Audited")
 										<td>{{$report->report_year}}</td>
 										@endif
-										<td>{{$report->submission_period}}</td>
 										<td>{{$report->total_capital}}</td>
 										<td>{{$report->total_assest}}</td>
 										<td>{{$report->total_liability}}</td>
@@ -63,7 +62,7 @@
 										<td>{{$report->profit_before_tax}}</td>
 										<td>{{$report->return_average_assets}}</td>
 										<td>{{$report->return_equity}}</td>
-										<td>{{$report->created_at}}</td>
+										<td>{{App\Helpers\CommonMethod::formatDateWithTime($report->created_at)}}</td>
 										<td>
 											<a href="{{ route('report')}}/{{$report->id}}" class="link" title="View" alt="view"><i class="fa fa-search"></i></a>
 										</td>

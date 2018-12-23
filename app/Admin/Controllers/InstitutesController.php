@@ -12,7 +12,7 @@ use Encore\Admin\Layout\Row;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
-use Encore\Admin\Widgets\Tab;
+use App\Widgets\Tab;
 use App\Helpers\CommonMethod;
 use Encore\Admin\Admin;
 use Illuminate\Support\Facades\Validator;
@@ -21,14 +21,14 @@ use App\Models\Report;
 use App\Models\ReportFiles;
 class InstitutesController extends Controller
 {
-    
+
     public function index(Content $content)
     {
-        
+
         return $content
-            ->header('Institutes')
-            ->description('Manage Institute...')
-            ->body($this->grid()->render());
+        ->header('Institutes')
+        ->description('Manage Institute...')
+        ->body($this->grid()->render());
 
     }
 
@@ -41,9 +41,9 @@ class InstitutesController extends Controller
     { 
         //return view('Clients.create');
         return $content
-            ->header('Institutes')
-            ->description('Create Institute...')
-            ->body($this->form('/admin/institutes'));
+        ->header('Institutes')
+        ->description('Create Institute...')
+        ->body($this->form('/admin/institutes'));
     }
     /**
      * Store a newly created resource in storage.
@@ -54,13 +54,13 @@ class InstitutesController extends Controller
     public function store(Request $request)
     {   
         $valid = request()->validate([
-			'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:18',
-            'email' => 'required|string|email|max:255|unique:institutes',
-            'password'=>'required|string|min:6|confirmed',
-            'username'=>'required|string|max:25|unique:institutes',
-            'logo' => 'nullable|image|max:1000|dimensions:min_width=150,min_height=150|mimes:jpeg,png,gif'
-        ]);
+           'name' => 'required|string|max:255',
+           'phone' => 'required|string|max:18',
+           'email' => 'required|string|email|max:255|unique:institutes',
+           'password'=>'required|string|min:6|confirmed',
+           'username'=>'required|string|max:25|unique:institutes',
+           'logo' => 'nullable|image|max:1000|dimensions:min_width=150,min_height=150|mimes:jpeg,png,gif'
+       ]);
         $data=$request->all();
         if(empty($data['client_male'])){
             $data['client_male']=0;
@@ -108,7 +108,7 @@ class InstitutesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update($id,Request $request){
-        
+
         $institute = request()->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:18',
@@ -148,24 +148,53 @@ class InstitutesController extends Controller
      *
      * @return Content
      */
-    public function show($id, Content $content)
-    {   
+    public function show($id, Content $content,Request $request)
+    {    $script = <<<SCRIPT
+
+        $('ul.pagination a.page-link').bind('click', function(e){
+            e.preventDefault();
+            var url = $(this).attr('href');
+            var page=url.split('/');
+            var param=page[page.length-1];
+            $.pjax({url: '/admin/reports/grid/'+param, container: '#tab_reportcontainer'});
+            return false;
+            });
+            $(document).on('ready pjax:end', function(event) {
+             $('ul.pagination a.page-link').bind('click', function(e){
+                e.preventDefault();
+                var url = $(this).attr('href');
+                var page=url.split('/');
+                var param=page[page.length-1];
+                $.pjax({url: '/admin/reports/grid/'+param, container: '#tab_reportcontainer'});
+                return false;
+                });
+                return false;
+                }); 
+
+SCRIPT;
+                Admin::script($script); 
+
+        /*if($request->header('x-pjax')){
+            return $this->reportgrid($id)->render();
+        }*/
         $tab = new Tab();
-        
+
         $tab->add('Account Details', $this->personaldetail($id)->render());
         $tab->add('Institute Details', $this->institutedetail($id)->render());
-        $tab->add('Reports', $this->reportgrid($id)->render());
-         $content
-            ->header(trans('Institutes'))
-            ->description(trans('admin.detail'))
-            ->body($tab);
+        $tab->add('Reports', $this->reportgrid($id)->render(),'','reportcontainer');
+        $content
+        ->header(trans('Institutes'))
+        ->description(trans('admin.detail'))
+        ->body($tab);
         $content->breadcrumb(
-                ['text' => 'Institute', 'url' => '/institutes'],
-                ['text' => Institute::find($id)->name]
-            );
-            return $content;
+            ['text' => 'Institute', 'url' => '/institutes'],
+            ['text' => Institute::find($id)->name]
+        );
+        return $content;
     }
-
+    public function paginatereport($id){
+        return $this->reportgrid($id)->render();
+    }    
     /**
      * Edit interface.
      *
@@ -176,13 +205,13 @@ class InstitutesController extends Controller
     public function edit($id, Content $content)
     {
         $content
-            ->header(trans('Institutes'))
-            ->description(trans('admin.edit'))
-            ->body($this->form()->edit($id));
+        ->header(trans('Institutes'))
+        ->description(trans('admin.edit'))
+        ->body($this->form()->edit($id));
         $content->breadcrumb(
-                ['text' => 'Institute', 'url' => '/institutes'],
-                ['text' => Institute::find($id)->name]
-            );
+            ['text' => 'Institute', 'url' => '/institutes'],
+            ['text' => Institute::find($id)->name]
+        );
         return $content;
     }
 
@@ -211,11 +240,11 @@ class InstitutesController extends Controller
      */
     protected function personaldetail($id)
     {
-        
+
         $show = new Show(Institute::findOrFail($id));
         $show->panel()
-            ->style('danger')
-            ->title('Account Details');
+        ->style('danger')
+        ->title('Account Details');
         $show->name(trans('Name'));
         
         $show->username(trans('username'));
@@ -239,10 +268,10 @@ class InstitutesController extends Controller
     }
     protected function institutedetail($id)
     {
-        
+
         $show = new Show(Institute::findOrFail($id));
         $show->panel()
-            ->title('Institute Details');
+        ->title('Institute Details');
         $show->logo()->image();
         $show->client_male(trans('Client Male'));
         $show->client_female(trans('Client Female'));
@@ -256,7 +285,7 @@ class InstitutesController extends Controller
 
     protected function grid()
     {
-        
+
         $grid = new Grid(new Institute());
         $grid->disableExport();
         $grid->id('ID')->sortable();
@@ -304,7 +333,7 @@ class InstitutesController extends Controller
     public function form($action = null)
     {
         $script = <<<SCRIPT
-                    
+
 SCRIPT;
 
         Admin::script($script);
@@ -323,7 +352,7 @@ SCRIPT;
             
             $row->width(6)->password('password', trans('admin.password'))->rules('required|confirmed')->placeholder('Password');
             $row->width(6)->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
-                ->placeholder('Confirm Password');
+            ->placeholder('Confirm Password');
 
         },$form);
 
@@ -404,57 +433,52 @@ SCRIPT;
 
     public function autocomplete(Request $request)
     {
-         $q= $request->get('q');
-         if(!empty($q)){
-            return Institute::where('name', 'like', "%$q%")->orWhere('phone', 'like', "%$q%")->paginate(null, ['id', 'name as text']);
-        }else{
-            return Institute::all()->paginate(null, ['id', 'name as text']);
+     $q= $request->get('q');
+     if(!empty($q)){
+        return Institute::where('name', 'like', "%$q%")->orWhere('phone', 'like', "%$q%")->paginate(null, ['id', 'name as text']);
+    }else{
+        return Institute::all()->paginate(null, ['id', 'name as text']);
+    }
+}
+
+
+protected function reportgrid($id)
+{
+
+    $grid = new Grid(new Report());
+    $grid->model()->where('institute_id','=',$id)->orderBy('id', 'DESC');
+    $grid->paginate(20);
+    $grid->disableExport();
+    $grid->disableActions();
+    $grid->disableFilter();
+    $grid->disableRowSelector();
+    $grid->disableCreateButton();
+    $grid->id('ID');
+    $grid->report_category(trans('Report Category'));
+    $grid->column('Period')->display(function () {
+        if($this->report_category=='Monthly'){
+            return CommonMethod::getMonthName($this->submission_period);
         }
-    }
+        if($this->report_category=='Quaterly'){
+            return CommonMethod::getQuarterName($this->submission_quater);
+        }
+        if($this->report_category=='Audited'){
+            return '';
+        }
+    });
+    $grid->report_year(trans('Year'));
+    $grid->total_capital(trans('Total Capital'));
+    $grid->total_assest(trans('Total Assest'));
+    $grid->total_liability(trans('Total Liability'));
+    $grid->loan_advance(trans('Loan Advance'));
+    $grid->customer_deposits(trans('Customer Deposits'));
+    $grid->profit_before_tax(trans('Profit Exc Tax'));
+    $grid->return_average_assets(trans('Return Ave Assets'));
+    $grid->return_equity(trans('Return Equity'));
 
-
-    protected function reportgrid($id)
-    {
-        
-        $grid = new Grid(new Report());
-        $grid->model()->where('institute_id','=',$id);
-        $grid->disableExport();
-        $grid->disableFilter();
-        $grid->id('ID');
-        $grid->report_category(trans('report_category'));
-        $grid->submission_period(trans('submission_period'));
-          
-        $grid->created_at(trans('Created'))->display(function($date){
-            return CommonMethod::formatDateWithTime($date);
-        });
-
-        $grid->actions(function (Grid\Displayers\Actions $actions) {
-            $actions->disableDelete();
-            // $actions->resource = 'client/delete';
-            // if ($actions->getKey() == 1) {
-            //     $actions->disableDelete();
-            // }
-        });
-        $grid->filter(function($filter){
-            // Remove the default id filter
-           $filter->disableIdFilter();
-             /*$filter->column(1/2, function ($filter) {
-            // Add a column filter
-                $filter->like('name', 'Name');
-                $filter->like('phone', 'Phone');
-                $filter->like('email', 'Email');
-                $filter->equal('status')->select(['0' => 'InActive','1'=>'Active']);
-            });
-            $filter->column(1/2, function ($filter) {
-                $filter->between('created_at')->datetime();
-            });*/
-        });
-        $grid->tools(function (Grid\Tools $tools) {
-            $tools->batch(function (Grid\Tools\BatchActions $actions) {
-                $actions->disableDelete();
-            });
-        });
-
-        return $grid;
-    }
+    $grid->created_at(trans('Created'))->display(function($date){
+        return CommonMethod::formatDate($date);
+    });
+    return $grid;
+}
 }

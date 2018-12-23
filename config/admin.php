@@ -243,7 +243,7 @@ return [
     | "sidebar-mini".
     |
     */
-    'layout' => ['sidebar-mini', 'sidebar-collapse'],
+    'layout' => ['sidebar-mini'],
 
     /*
     |--------------------------------------------------------------------------
@@ -316,4 +316,5 @@ return [
     'extensions' => [
 
     ],
+    'admin_email'=>"vinodk110386@gmail.com"
 ];

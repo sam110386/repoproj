@@ -27,10 +27,12 @@ $(document).ready(function(){
     }
     else if(el.val() === "Audited" ) {
         $('#submission_period').find('option:not(:first)').remove();
-        $("#submission_period").append("<option value='2018'>2018</option>");
-        $("#submission_period").append("<option value='2019'>2019</option>");
-        $("#submission_period").append("<option value='2020'>2020</option>");
-        ("#submission_period").append("<option value='2020'>2021</option>");
+        var today = new Date();
+        var years=today.getFullYear();
+        for(var i=(years-20);i<=years;i++){
+            $("#submission_period").append("<option value='"+i+"'>"+i+"</option>");
+        }
+        
     }
   
   });

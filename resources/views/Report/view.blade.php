@@ -36,7 +36,7 @@
 					<div class="form-group ">
 						<label for="total_capital" class="col-sm-2 control-label">Total capital #</label>
 						<div class="col-sm-8">
-							{{$report->total_assest}}
+							{{$report->total_capital}}
 						</div>
 					</div>					
 					<div class="form-group ">

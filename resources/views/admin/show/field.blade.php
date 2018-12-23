@@ -1,8 +1,8 @@
 <div class="form-group ">
-    <label class="col-sm-2 control-label">{{ $label }}</label>
+    <label class="col-sm-2 control-label">{{ $label }} : </label>
     <div class="col-sm-8">
         @if($wrapped)
-        <div class="box box-solid box-default no-margin box-show">
+        <div class=" box-solid box-default no-margin box-show">
             <!-- /.box-header -->
             <div class="box-body">
                 @if($escape)
