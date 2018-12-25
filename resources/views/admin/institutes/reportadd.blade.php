@@ -182,7 +182,7 @@
 						<div class="col-sm-offset-3 col-sm-2">	
 							<div class="form-group">
 
-								<a href="/admin/reports" class=" btn bg-black" >
+								<a href="/admin/institutes/{{$id}}" class=" btn bg-black" >
 									<i class="fa fa-arrow-left"></i>
 									<span>Back</span>
 								</a>

@@ -21,15 +21,15 @@ class HomeController extends Controller
             ->description('')
             ->row(function (Row $row) {
                 $row->column(2, function (Column $column) {
-                    $column->append(new InfoBox('Clients', '', 'aqua', '/admin/institutes', Institute::sum('client_male')+Institute::sum('client_female')));
+                    $column->append(new InfoBox('Clients', '', 'aqua', '/admin/institutes', number_format(Institute::sum('client_male')+Institute::sum('client_female'),0,'',',')));
                 });
 
                 $row->column(2, function (Column $column) {
-                    $column->append(new InfoBox('Staffs', '', 'green', '/admin/institutes', Institute::sum('staff_male')+Institute::sum('staff_female')));
+                    $column->append(new InfoBox('Staffs', '', 'green', '/admin/institutes', number_format(Institute::sum('staff_male')+Institute::sum('staff_female'),0,'',',')));
                 });
 
                 $row->column(2, function (Column $column) {
-                    $column->append(new InfoBox('Board Memebers', '', 'red', '/admin/institutes', Institute::sum('boardmember_male')+Institute::sum('boardmember_female')));
+                    $column->append(new InfoBox('Board Memebers', '', 'red', '/admin/institutes', number_format(Institute::sum('boardmember_male')+Institute::sum('boardmember_female'),0,'',',')));
                 });
                 $row->column(3, function (Column $column) {
                     //$column->append(new InfoBox('New Users', 'users', 'aqua', '/admin/users', '1024'));
@@ -37,7 +37,7 @@ class HomeController extends Controller
             })
             ->row(function (Row $row) {
                 $row->column(12, function (Column $column) {
-                    $column->append("<h3>New Institutes</h3>");
+                    $column->append("<h3>Active Institutions</h3>");
                 });
             })
             ->row(function (Row $row) {
@@ -59,7 +59,9 @@ class HomeController extends Controller
         $grid->disableCreateButton();
         $grid->disablePagination();
         $grid->id('ID');
-        $grid->name(trans('Institute Name'));
+        $grid->name(trans('Institute Name'))->display(function ($name) {
+            return "<a href='/admin/institutes/".$this->id."'>".$name."</a>";
+        });
         $grid->client_male(trans('Client(M)'));
         $grid->client_female(trans('Client(F)'));
         $grid->staff_male(trans('Staff(M)'));
@@ -67,7 +69,7 @@ class HomeController extends Controller
         $grid->boardmember_male(trans('Board Member(M)'));
         $grid->boardmember_female(trans('Board Member(F)'));
         
-        $grid->created_at(trans('Created'))->display(function($date){
+        $grid->updated_at(trans('Updated'))->display(function($date){
             return CommonMethod::formatDateWithTime($date);
         });
 

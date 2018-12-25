@@ -16,7 +16,7 @@
 						</div>
 
 						<div class="panel-body">
-							Example of a table with fully <code>bordered</code> cells. Add <code>.table-bordered</code> to the base <code>.table</code> class for borders on all sides of the table and cells. This is a default Bootstrap option for the table, for more advanced border options check <a href="table_borders.html">Table borders</a> page. Bordered table can be combined with other table styles.
+							
 						</div>
 
 						<div class="table-responsive">

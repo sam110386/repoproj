@@ -24,13 +24,25 @@ Route::group([
     $router->match(['put', 'patch'], '/institutes/{id}','InstitutesController@update');
     $router->delete('/institutes/{id}', 'InstitutesController@destroy')->where('id', '[0-9]+');
     $router->get('/institutes/autocomplete', 'InstitutesController@autocomplete')->name('Institutes.autocomplete');
+    //export pdf
+    $router->get('/institutes/{id}/exportpdf', 'InstitutesController@export')->where('id', '[0-9]+');
+    //create institute reports
+    $router->get('/institutes/{id}/create', 'InstitutesController@createreport')->name('Institutes.createreport');
+    $router->post('/institutes/{id}/createreportsave', 'InstitutesController@createreportsave')->name('Institutes.createreportsave');
+    $router->delete('/institutes/{id}/{reportid}', 'InstitutesController@deletereport')->where('id', '[0-9]+');
+    $router->get('/institutes/{id}/{reportid}', 'InstitutesController@viewreport')->where('id', '[0-9]+');
+    
+    //edit institute report
+    $router->get('/institutes/{id}/{reportid}/edit', 'InstitutesController@editreport')->name('Institutes.editreport');
+    $router->post('/institutes/{id}/{reportid}/editreportsave', 'InstitutesController@editreportsave')->name('Institutes.editreportsave');
+
     
     //Reports Routes
     $router->get('/reports', 'ReportsController@index')->name('Report.index')->where('id', '[0-9]+');
     $router->get('/reports/grid/{id}', 'ReportsController@reportgrid')->name('Report.show')->where('id', '[0-9]+');
     $router->get('/reports/{id}', 'ReportsController@show')->name('Reports.show')->where('id', '[0-9]+');
     $router->get('/reports/{id}/edit/', 'ReportsController@edit')->name('Reports.edit')->where('id', '[0-9]+');
-
+    $router->delete('/reports/{id}', 'ReportsController@destroy')->where('id', '[0-9]+');
     $router->get('/reports/create', 'ReportsController@create')->name('Reports.create');
 
     $router->post('/reports', 'ReportsController@store')->name('Reports.store');

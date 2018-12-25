@@ -44,6 +44,8 @@ class ReportsController extends Controller
 		->description('Manage Reports...')
 		->body($this->grid()->render());
 		
+            
+		
 	}
 
 	protected function grid()
@@ -51,7 +53,7 @@ class ReportsController extends Controller
 
 		$grid = new Grid(new Report());
 		$grid->model()->orderBy('id', 'DESC');
-		$grid->disableExport();
+		//$grid->disableExport();
 		$grid->disableCreateButton();
 		$grid->id('ID')->sortable();
 		$grid->institute_id(trans('Institue'))->display(function($id){
@@ -69,7 +71,7 @@ class ReportsController extends Controller
 				return '';
 			}
 		});
-		$grid->report_year(trans('Year'));
+		//$grid->report_year(trans('Year'));
 		$grid->total_capital(trans('Total Capital'));
 		$grid->total_assest(trans('Total Assest'));
 		$grid->total_liability(trans('Total Liability'));
@@ -79,18 +81,18 @@ class ReportsController extends Controller
 		$grid->return_average_assets(trans('Return Ave Assets'));
 		$grid->return_equity(trans('Return Equity'));
 
-		$grid->created_at(trans('Created'))->display(function($date){
+		/*$grid->created_at(trans('Created'))->display(function($date){
 			return CommonMethod::formatDate($date);
-		});
+		});*/
 
 		$grid->actions(function (Grid\Displayers\Actions $actions) {
-			$actions->disableDelete();
+			//$actions->disableDelete();
 
 		});
 
 		$grid->tools(function (Grid\Tools $tools) {
 			$tools->batch(function (Grid\Tools\BatchActions $actions) {
-				$actions->disableDelete();
+				//$actions->disableDelete();
                 //$actions->disableEdit();
                 //$actions->disableView();
 			});
@@ -135,13 +137,13 @@ class ReportsController extends Controller
         $valid = request()->validate([
 			'report_category' => 'required',
 			'submission_period' => 'required',
-			'total_capital' => 'required|nullable|numeric|digits_between:1,5',
-			'total_assest' => 'required|nullable|numeric|digits_between:1,5',
-			'total_liability' => 'required|nullable|numeric|digits_between:1,5',
-			'loan_advance' => 'required|nullable|numeric|digits_between:1,5',
-			'customer_deposits' => 'required|nullable|numeric|digits_between:1,5',
-			'profit_before_tax' => 'required|nullable|numeric|digits_between:1,5',
-			'return_average_assets' => 'required|nullable|numeric|digits_between:1,5',
+			'total_capital' => 'required|nullable|numeric',
+			'total_assest' => 'required|nullable|numeric',
+			'total_liability' => 'required|nullable|numeric',
+			'loan_advance' => 'required|nullable|numeric',
+			'customer_deposits' => 'required|nullable|numeric',
+			'profit_before_tax' => 'required|nullable|numeric',
+			'return_average_assets' => 'required|nullable|numeric',
 			'return_equity' => 'required|nullable|numeric',			
 			//'files' => 'mimes:jpeg,png,gif,pdf,doc,docx'
 		]);	
@@ -214,13 +216,13 @@ class ReportsController extends Controller
         $institute = request()->validate([
             'report_category' => 'required',
 			'submission_period' => 'required',
-			'total_capital' => 'required|nullable|numeric|digits_between:1,5',
-			'total_assest' => 'required|nullable|numeric|digits_between:1,5',
-			'total_liability' => 'required|nullable|numeric|digits_between:1,5',
-			'loan_advance' => 'required|nullable|numeric|digits_between:1,5',
-			'customer_deposits' => 'required|nullable|numeric|digits_between:1,5',
-			'profit_before_tax' => 'required|nullable|numeric|digits_between:1,5',
-			'return_average_assets' => 'required|nullable|numeric|digits_between:1,5',
+			'total_capital' => 'required|nullable|numeric',
+			'total_assest' => 'required|nullable|numeric',
+			'total_liability' => 'required|nullable|numeric',
+			'loan_advance' => 'required|nullable|numeric',
+			'customer_deposits' => 'required|nullable|numeric',
+			'profit_before_tax' => 'required|nullable|numeric',
+			'return_average_assets' => 'required|nullable|numeric',
 			'return_equity' => 'required|nullable|numeric',
         ]);
         $data=$request->all();
@@ -228,8 +230,7 @@ class ReportsController extends Controller
 		$submission_quater = ($data['report_category']=="Quaterly")?$data['submission_period']:NULL;		
 		$report_year = ($data['report_category']=="Audited")?$data['submission_period']:NULL;
 		
-		$report = new Report;
-		$report->id =$data['id'];
+		$report =  Report::find($data['id']);
 		$report->report_category = $data['report_category'];
 		$report->submission_period = $submission_period ;
 		$report->submission_quater = $submission_quater ;
@@ -269,8 +270,17 @@ class ReportsController extends Controller
         }
     }
     
-
-
+    /**delete**/
+    public function destroy($id)
+    {   
+    	if(Report::destroy($reportid)){
+            ReportsFiles::where('report_id', $reportid)->delete();
+            $res = ['status' => true, 'message' => 'Report has been removed.'];
+        }else{
+            $res = ['status' => false, 'message' => 'Something went wrong!'];
+        }
+        return response()->JSON($res);
+    }    
     /**
      * Show interface.
      *
@@ -485,53 +495,44 @@ SCRIPT;
 	{
 
 		$grid = new Grid(new Report());
-		$grid->model()->where('institute_id','=',$id)->orderBy('id', 'DESC');
-		$grid->paginate(20);
-		$grid->disableExport();
-		$grid->disableFilter();
-		$grid->disableCreateButton();
-		$grid->disableActions();
-		$grid->id('ID');
-		$grid->report_category(trans('Report Category'));
-		$grid->column('Period')->display(function () {
-			if($this->report_category=='Monthly'){
-				return CommonMethod::getMonthName($this->submission_period);
-			}
-			if($this->report_category=='Quaterly'){
-				return CommonMethod::getQuarterName($this->submission_quater);
-			}
-			if($this->report_category=='Audited'){
-				return '';
-			}
-		});
-		$grid->report_year(trans('Year'));
-		$grid->total_capital(trans('Total Capital'));
-		$grid->total_assest(trans('Total Assest'));
-		$grid->total_liability(trans('Total Liability'));
-		$grid->loan_advance(trans('Loan Advance'));
-		$grid->customer_deposits(trans('Customer Deposits'));
-		$grid->profit_before_tax(trans('Profit Exc Tax'));
-		$grid->return_average_assets(trans('Return Ave Assets'));
-		$grid->return_equity(trans('Return Equity'));
+	    $grid->tools(function ($tools) {
+	        $tools->disableRefreshButton();
+	        //$tools->prepend(new PdfButton());
+	    });
+	    $grid->model()->where('institute_id','=',$id)->orderBy('id', 'DESC');
+	    $grid->paginate(20);
+	    //$grid->disableExport();
+	    //$grid->disableActions();
+	    //$grid->disableRefreshButton();
+	    $grid->disableFilter();
+	    $grid->disableRowSelector();
+	    //$grid->disableCreateButton();
+	    $grid->id('ID');
+	    $grid->report_category(trans('Report Category'));
+	    $grid->column('Period')->display(function () {
+	        if($this->report_category=='Monthly'){
+	            return CommonMethod::getMonthName($this->submission_period);
+	        }
+	        if($this->report_category=='Quaterly'){
+	            return CommonMethod::getQuarterName($this->submission_quater);
+	        }
+	        if($this->report_category=='Audited'){
+	            return '';
+	        }
+	    });
+	    //$grid->report_year(trans('Year'));
+	    $grid->total_capital(trans('Total Capital'));
+	    $grid->total_assest(trans('Total Assest'));
+	    $grid->total_liability(trans('Total Liability'));
+	    $grid->loan_advance(trans('Loan Advance'));
+	    $grid->customer_deposits(trans('Customer Deposits'));
+	    $grid->profit_before_tax(trans('Profit Exc Tax'));
+	    $grid->return_average_assets(trans('Return Ave Assets'));
+	    $grid->return_equity(trans('Return Equity'));
 
-		$grid->created_at(trans('Created'))->display(function($date){
-			return CommonMethod::formatDate($date);
-		});
-
-		/*$grid->actions(function (Grid\Displayers\Actions $actions) {
-			$actions->disableDelete();
-            // $actions->resource = 'client/delete';
-            // if ($actions->getKey() == 1) {
-            //     $actions->disableDelete();
-            // }
-		});
-		
-		$grid->tools(function (Grid\Tools $tools) {
-			$tools->batch(function (Grid\Tools\BatchActions $actions) {
-				$actions->disableDelete();
-			});
-		});*/
-
-		return $grid;
+	    /*$grid->created_at(trans('Created'))->display(function($date){
+	        return CommonMethod::formatDate($date);
+	    });*/
+	    return $grid;
 	}
 }

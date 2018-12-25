@@ -16,8 +16,8 @@ class CreateTableReports extends Migration
             $table->increments('id'); 
             $table->integer('institute_id')->unsigned(); 
             $table->string('report_category');                       
-            $table->integer('submission_period')->unsigned();
-            $table->integer('submission_quater')->unsigned();
+            $table->integer('submission_period')->unsigned()->default(NULL);
+            $table->integer('submission_quater')->unsigned()->default(NULL);
             $table->year('report_year');
             $table->decimal('total_capital',8, 2);
             $table->decimal('total_assest',8, 2);

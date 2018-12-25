@@ -126,13 +126,13 @@ class ReportsController extends Controller
 		$valid = request()->validate([
 			'report_category' => 'required',
 			'submission_period' => 'required',
-			'total_capital' => 'required|nullable|numeric|digits_between:1,5',
-			'total_assest' => 'required|nullable|numeric|digits_between:1,5',
-			'total_liability' => 'required|nullable|numeric|digits_between:1,5',
-			'loan_advance' => 'required|nullable|numeric|digits_between:1,5',
-			'customer_deposits' => 'required|nullable|numeric|digits_between:1,5',
-			'profit_before_tax' => 'required|nullable|numeric|digits_between:1,5',
-			'return_average_assets' => 'required|nullable|numeric|digits_between:1,5',
+			'total_capital' => 'required|nullable|numeric',
+			'total_assest' => 'required|nullable|numeric',
+			'total_liability' => 'required|nullable|numeric',
+			'loan_advance' => 'required|nullable|numeric',
+			'customer_deposits' => 'required|nullable|numeric',
+			'profit_before_tax' => 'required|nullable|numeric',
+			'return_average_assets' => 'required|nullable|numeric',
 			'return_equity' => 'required|nullable|numeric',			
 			//'files' => 'mimes:jpeg,png,gif,pdf,doc,docx'
 		]);	
