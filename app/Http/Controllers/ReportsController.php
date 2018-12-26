@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Report;
 use App\Models\ReportsFiles;
 use Mail;
-
+use App\Helpers\CommonMethod;
+use Illuminate\Support\Facades\Response;
 class ReportsController extends Controller
 {
 	private $profile;
@@ -41,35 +42,29 @@ class ReportsController extends Controller
 		$pageData = ['title' => 'Reports','profile' => $profile];
 		
 
-		$reportsQuery = Report::where('institute_id', $profile->id)->orderBy('id', 'DESC');
-		/*if($request->filled('query')){
-			$eventsQuery->where(function($query) use ($request){
-				$query->where('name', 'like', '%'.$request->input('query').'%');
-				$query->orWhere('description', 'like', '%'.$request->input('query').'%');
-			});
+		$reportsQuery = Report::where('institute_id','=', $profile->id)->orderBy('id', 'DESC');
+		if($request->filled('report_category')){
+			$reportsQuery->where('report_category','=', $request->input('report_category'));
 		}
-		if($request->filled('category')){
-			$eventsQuery->whereHas('categories', function($query) use ($request){
-				$query->where('event_categories.id', $request->input('category'));
-			});
-		}
-		if($request->filled('month')){
-			$m_start = date_create($request->input('month'))->modify('first day of this month');
-			$m_end = date_create($request->input('month'))->modify('last day of this month');
+		
+		if($request->filled('start')){
+			$m_start = date_create($request->input('start'));//->modify('first day of this month');
 		} else {
-			$m_start = date_create()->modify('first day of this month');
-			$m_end = date_create()->modify('last day of this month');
+			$m_start = '';//date_create()->modify('first day of this month');
 		}
-		$eventsQuery->where(function ($query) use ($m_start, $m_end){
+		if($request->filled('end')){
+			$m_end = date_create($request->input('end'));//->modify('last day of this month');
+		} else {
+			$m_end ='';//date_create()->modify('last day of this month');
+		}
+		$reportsQuery->where(function ($query) use ($m_start, $m_end){
 			$query->where(function ($query) use ($m_start, $m_end){
-				$query->where('start_date', '>=', $m_start);
-				$query->where('start_date', '<=', $m_end);
+				if(!empty($m_start))
+				$query->where('created_at', '>=', $m_start);
+				if(!empty($m_end))
+				$query->where('created_at', '<=', $m_end);
 			});
-			$query->orWhere(function ($query) use ($m_start, $m_end){
-				$query->where('end_date', '>=', $m_start);
-				$query->where('end_date', '<=', $m_end);
-			});
-		});*/
+		});
 		$reports = $reportsQuery->paginate(50);
 		return view(
 			'Report.index',
@@ -297,5 +292,64 @@ class ReportsController extends Controller
 	    return [
 	        'profile_picture.max' => 'Maximum 1MB Allowed',
 	    ];
+	}
+
+
+	/***report export***/
+	public function export(Request $request)
+	{	$profile = Auth::user();
+	    $headers = array(
+	        "Content-type" => "text/csv",
+	        "Content-Disposition" => "attachment; filename=file.csv",
+	        "Pragma" => "no-cache",
+	        "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+	        "Expires" => "0"
+	    );
+
+	    $reportsQuery = Report::where('institute_id','=', $profile->id)->orderBy('id', 'DESC');
+		if($request->filled('report_category')){
+			$reportsQuery->where('report_category','=', $request->input('report_category'));
+		}
+		
+		if($request->filled('start')){
+			$m_start = date_create($request->input('start'));
+		} else {
+			$m_start = '';
+		}
+		if($request->filled('end')){
+			$m_end = date_create($request->input('end'));
+		} else {
+			$m_end ='';
+		}
+		$reportsQuery->where(function ($query) use ($m_start, $m_end){
+			$query->where(function ($query) use ($m_start, $m_end){
+				if(!empty($m_start))
+				$query->where('created_at', '>=', $m_start);
+				if(!empty($m_end))
+				$query->where('created_at', '<=', $m_end);
+			});
+		});
+		$reports = $reportsQuery->get();
+		//echo "<pre>";print_r($reports);die;
+	    $columns = array('Report#', 'Report Category', 'Period', 'Total Capital', 'Total Assest', 'Total Liability', 'Loan Advance', 'Customer Deposits', 'Profit Exc Tax', 'Return Ave Assets','Return Equity','Timestamp');
+
+	    $callback = function() use ($reports, $columns)
+	    {
+	        $file = fopen('php://output', 'w');
+	        fputcsv($file, $columns);
+
+	        foreach($reports as $report) {
+	        	$period=$report->report_year;
+	        	if($report->report_category=='Monthly'){
+	        		$period=CommonMethod::getMonthName($report->submission_period);
+	        	}
+	        	if($report->report_category=='Quaterly'){
+	        		$period=CommonMethod::getQuarterName($report->submission_quater);
+	        	}
+	            fputcsv($file, array($report->id,$report->report_category, $period, $report->total_capital, $report->total_assest, $report->total_liability, $report->loan_advance, $report->customer_deposits, $report->profit_before_tax, $report->return_average_assets, $report->return_equity,$report->created_at));
+	        }
+	        fclose($file);
+	    };
+	    return Response::stream($callback, 200, $headers);
 	}
 }

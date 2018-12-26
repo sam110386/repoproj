@@ -345,14 +345,7 @@ SCRIPT;
 
     public function form($action = null)
     {
-        $script = <<<SCRIPT
-
-SCRIPT;
-
-        Admin::script($script);
-
         
-
         $form = new Form(new Institute());
         
         if($action) $form->setAction($action);

@@ -7,53 +7,66 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div class="row">
-                        <form id="statisticform" name="statisticform">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="name" class="col-sm-5 control-label">Report Category</label>
-                                <div class="col-sm-7">  
-                                    <select class="form-control m-bot15" id="report_category" name="report_category"> 
-                                        <option value="Monthly" >Monthly</option>
-                                        <option value="Quaterly" >Quaterly</option>
-                                        <option value="Audited" >Audited</option>                               
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="name" class="col-sm-5 control-label">Period</label>
-                                <div class="col-sm-7">
-                                    <select class="form-control m-bot15" id="submission_period" name="submission_period">    
-                                        <option value="" >Select</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="name" class="col-sm-5 control-label">Entity Type</label>
-                                <div class="col-sm-7">
-                                    <select class="form-control m-bot15" id="entity_type" name="entity_type">    
-                                        <option value="total_assets" >Total assets</option>
-                                        <option value="total_liability" >Total Liability</option>
-                                        <option value="loan_advance" >Loans & advances</option>
-                                        <option value="customer_deposits" >Customer deposits</option>
-                                        <option value="profit_before_tax" >Profit before tax</option>
-                                        <option value="return_average_assets" >Return on average assets</option>
-                                        <option value="return_equity" >Return on equity</option>
-                                        <option value="clints" >Number of Client</option>
-                                        <option value="staff" >Number of Staff</option>
-                                        <option value="board_members" >Board members</option>
 
-                                    </select>
+                    <form id="statisticform" name="statisticform">
+                        <div class="row">
+                            <div class="col-md-12" style="margin-bottom:10px; ">
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-1 control-label">Institute</label>
+                                    <div class="col-sm-7">  
+                                        <select class="form-control m-bot15" id="instiute_id" name="instiute_id" multiple="true"></select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3"><button name="refresh" id="refresh" class="btn btn-success" onclick="refreshchart()">Refresh</button></div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-5 control-label">Report Category</label>
+                                    <div class="col-sm-7">  
+                                        <select class="form-control m-bot15" id="report_category" name="report_category"> 
+                                            <option value="Monthly" >Monthly</option>
+                                            <option value="Quaterly" >Quaterly</option>
+                                            <option value="Audited" >Audited</option>                               
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-5 control-label">Period</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control m-bot15" id="submission_period" name="submission_period">   
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-5 control-label">Entity Type</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control m-bot15" id="entity_type" name="entity_type">    
+                                            <option value="total_assets" >Total assets</option>
+                                            <option value="total_liability" >Total Liability</option>
+                                            <option value="loan_advance" >Loans & advances</option>
+                                            <option value="customer_deposits" >Customer deposits</option>
+                                            <option value="profit_before_tax" >Profit before tax</option>
+                                            <option value="return_average_assets" >Return on average assets</option>
+                                            <option value="return_equity" >Return on equity</option>
+                                            <option value="clints" >Number of Client</option>
+                                            <option value="staff" >Number of Staff</option>
+                                            <option value="board_members" >Board members</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button name="refresh" id="refresh" type="button" class="btn btn-success" onclick="refreshchart()">Refresh</button>
+                            </div>
+                        </div>
                     </form>
-                    </div>
+                    
                     <div class="row">
                         <div class="col-md-12">
                             <canvas id="myChart" width="400" height="400"></canvas>
@@ -69,7 +82,6 @@
         $("#report_category").change(function() {
             var el = $(this) ;    
             if(el.val() === "Monthly" ) {
-                $('#submission_period').find('option:not(:first)').remove();
                 $("#submission_period").append("<option value='1'>January</option>");
                 $("#submission_period").append("<option value='2'>February</option>");
                 $("#submission_period").append("<option value='3'>March</option>");
@@ -84,14 +96,12 @@
                 $("#submission_period").append("<option value='12'>December</option>");    
             }
             else if(el.val() === "Quaterly" ) {     
-                $('#submission_period').find('option:not(:first)').remove();
                 $("#submission_period").append("<option value='1'>Q1</option>");
                 $("#submission_period").append("<option value='2'>Q2</option>");
                 $("#submission_period").append("<option value='3'>Q3</option>");
                 $("#submission_period").append("<option value='4'>Q4</option>");
             }
             else if(el.val() === "Audited" ) {
-                $('#submission_period').find('option:not(:first)').remove();
                 var today = new Date();
                 var years=today.getFullYear();
                 for(var i=(years-20);i<=years;i++){
@@ -106,7 +116,48 @@
 
     function refreshchart(){
         var formdata=$("#statisticform").serialize();
+        alert(JSON.stringify(formdata));
     }
+</script>
+<script type="text/javascript">
+    //$(document).off('change', "#instiute_id");
+    $(document).ready(function () {
+        
+        /*var target = $("#instiute_id");
+        $.get("/admin/statistics/instituteautocomplete?q="+target.val(), function (respdata) {
+            target.find("option").remove();
+            target.select2({
+                data: $.map(respdata, function (d) {
+                    return {
+                        id: d.id,
+                        text:d.name
+                    }
+                })
+            }).trigger('change');
+        });*/
+        $("#instiute_id").select2({
+            placeholder: "Select Institutes ",
+            minimumInputLength: 1,
+              ajax: {
+                url: "/admin/statistics/instituteautocomplete",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                  return {q: params.term,page: params.page};
+                },
+                processResults: function (data, params) {
+                  params.page = params.page || 1;
+                  return {
+                    results: $.map(data.data, function (d) {return {id: d.id,text:d.name}}),
+                    pagination: {more: data.next_page_url}
+                  };
+                },
+                cache: true
+              },
+             escapeMarkup: function (markup) {return markup;}
+            });
+    });
+    
 </script>
 <script>
     var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
@@ -150,7 +201,7 @@
         });*/
     });
     function addData(chart, data, datasetIndex) {
-       window.chart.data.datasets[datasetIndex].data = data;
-       window.chart.update();
-    }
+     window.chart.data.datasets[datasetIndex].data = data;
+     window.chart.update();
+ }
 </script>

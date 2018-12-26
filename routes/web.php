@@ -34,4 +34,5 @@ Route::group([
 	$router->get('/report/add', 'ReportsController@add')->name('report-add');	
     $router->post('/report/save', 'ReportsController@save')->name('report-info-save');
     $router->get('/report/{id}', 'ReportsController@view')->where('id', '[0-9]+');
+    $router->get('/report/export', 'ReportsController@export')->name('export');
 });

@@ -46,5 +46,24 @@ class StatisticsController extends Controller
 		
 	}
 
+	public function instituteautocomplete(Request $request)
+	{
+	     $q= $request->get('q');
+	     if(!empty($q) && !$q){
+	        return Institute::where('name', 'like', "%$q%")->orWhere('phone', 'like', "%$q%")->paginate(null, ['id', 'name']);
+	    }else{
+	        return Institute::orderBy('name','ASC')->paginate(null, ['id', 'name']);
+	    }
+	}
+	/*
+	public function institute(Request $request)
+    {
+	     $q= $request->get('q');
+	     if(!empty($q) && !$q){
+	        return Institute::where('name', 'like', "%$q%")->orWhere('username', 'like', "%$q%")->select('id','name')->get();
+	    }else{
+	         return Institute::orderBy('name','ASC')->select('id','name')->get();//->pluck('id', 'name as text');
+	    }
+	}*/
 	
 }

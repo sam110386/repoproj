@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-
+use App\Models\Report;
 use App\Models\Institute;
 class AccountController extends Controller
 {
@@ -36,7 +36,9 @@ class AccountController extends Controller
 			$profilePic = '/img/avatar5.png';
 		}
 		$profile['profile_picture'] = $profilePic;
-		$pageData = ['title' => 'Dashboard','profile' => $profile];
+		//get Recent 20 reports
+		$reports=Report::where('institute_id','=',$profile->id)->orderBy('id', 'DESC')->limit(20)->get();
+		$pageData = ['title' => 'Dashboard','profile' => $profile,'reports'=>$reports];
 		return view('Account.dashboard',$pageData);
 	}
 

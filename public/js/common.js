@@ -37,3 +37,19 @@ $(document).ready(function(){
   
   });
 })
+
+/**report listing page***/
+$(document).ready(function(){
+    $('#reportsearch .input-daterange').datepicker({});
+/*$('#created_at_start').datetimepicker({format: 'MM/DD/YYYY',minDate:moment()});
+        $('#created_at_end').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'MM/DD/YYYY'
+        });
+        $("#created_at_start").on("dp.change", function (e) {
+            $('#created_at_end').data("DateTimePicker").minDate(e.date);
+        });
+        $("#created_at_end").on("dp.change", function (e) {
+            $('#created_at_start').data("DateTimePicker").maxDate(e.date);
+        });*/
+    });

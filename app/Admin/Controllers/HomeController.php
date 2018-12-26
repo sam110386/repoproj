@@ -11,6 +11,7 @@ use Encore\Admin\Grid;
 use Encore\Admin\Widgets\InfoBox;
 use App\Models\Institute;
 use App\Helpers\CommonMethod;
+use Illuminate\Support\Facades\DB;
 class HomeController extends Controller
 {
     public function index(Content $content)
@@ -31,8 +32,8 @@ class HomeController extends Controller
                 $row->column(2, function (Column $column) {
                     $column->append(new InfoBox('Board Memebers', '', 'red', '/admin/institutes', number_format(Institute::sum('boardmember_male')+Institute::sum('boardmember_female'),0,'',',')));
                 });
-                $row->column(3, function (Column $column) {
-                    //$column->append(new InfoBox('New Users', 'users', 'aqua', '/admin/users', '1024'));
+                $row->column(5, function (Column $column) {
+                    $column->append($this->getTopPerformer());
                 });
             })
             ->row(function (Row $row) {
@@ -45,6 +46,12 @@ class HomeController extends Controller
                     $column->append($this->recentgrid());
                 });
             });
+    }
+
+
+    protected function getTopPerformer(){
+        $institutes=Institute::select( 'id','name',DB::raw( '(client_female+staff_female+boardmember_female) as totalfemail' ),DB::raw( '(client_male+client_female+staff_male+staff_female+boardmember_male+boardmember_female) as total' ), DB::raw( '(client_female+staff_female+boardmember_female)/(client_male+client_female+staff_male+staff_female+boardmember_male+boardmember_female) as ratio' ) )->orderBy('ratio',"DESC")->limit(5)->get();
+        return view('admin.dashboard.topperformer',['institutes'=>$institutes]);
     }
 
      protected function recentgrid()

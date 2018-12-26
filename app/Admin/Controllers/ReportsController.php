@@ -58,7 +58,7 @@ class ReportsController extends Controller
 		$grid->id('ID')->sortable();
 		$grid->institute_id(trans('Institue'))->display(function($id){
 			return Institute::find($id)->name;
-		});;
+		});
 		$grid->report_category(trans('Report Category'));
 		$grid->column('Period')->display(function () {
 			if($this->report_category=='Monthly'){
