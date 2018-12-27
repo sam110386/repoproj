@@ -52,6 +52,7 @@ Route::group([
     //Statistics Route
     $router->get('/statistics', 'StatisticsController@index')->name('Statistics.index')->where('id', '[0-9]+');
     $router->get('/statistics/instituteautocomplete', 'StatisticsController@instituteautocomplete')->name('Statistics.instituteautocomplete');
+    $router->post('/statistics/loadchartdata', 'StatisticsController@loadchartdata')->name('Statistics.loadchartdata');
 
 
 });
