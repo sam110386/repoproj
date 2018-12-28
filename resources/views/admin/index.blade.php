@@ -43,6 +43,6 @@
 
 <!-- REQUIRED JS SCRIPTS -->
 {!! Admin::js() !!}
-
+<script src="{{ asset('bower_components/chart.js/Chart.min.js') }}"></script>
 </body>
 </html>

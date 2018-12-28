@@ -66,26 +66,29 @@ class StatisticsController extends Controller
 		$return=array('institutes'=>$institutes);
 		//if client selected
 		if($request->entity_type=='clients'){
-			$data=$InstitutesObj->select('id',DB::raw('(client_male+client_female) as client'))->orderBy('id','ASC')->get();
+			$data=$InstitutesObj->select('id as institute_id',DB::raw('(client_male+client_female) as total'))->orderBy('id','ASC')->get();
 		}
 		//if staff selected
 		if($request->entity_type=='staff'){
-			$data=$InstitutesObj->select('id',DB::raw('(staff_male+staff_female) as client'))->orderBy('id','ASC')->get();
+			$data=$InstitutesObj->select('id as institute_id',DB::raw('(staff_male+staff_female) as total'))->orderBy('id','ASC')->get();
 		}
 		//if board member selected
 		if($request->entity_type=='board_members'){
-			$data=$InstitutesObj->select('id',DB::raw('(boardmember_male+boardmember_female) as client'))->orderBy('id','ASC')->get();
+			$data=$InstitutesObj->select('id as institute_id',DB::raw('(boardmember_male+boardmember_female) as total'))->orderBy('id','ASC')->get();
 		}
 		//if total capital is selected
 		if($request->entity_type=='total_capital'){
 			$reportCategory=$request->report_category;
 			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
 			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','=',$request->submission_period);
+				$reprtObj->where('submission_period','>=',$request->submission_period_from);
+				$reprtObj->where('submission_period','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','=',$request->submission_period);
+				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
+				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','=',$request->submission_period);
+				$reprtObj->where('report_year','>=',$request->submission_period_from);
+				$reprtObj->where('report_year','<=',$request->submission_period_to);
 			}
 			$data=$reprtObj->select('institute_id', DB::raw('SUM(total_capital) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 		}
@@ -93,11 +96,14 @@ class StatisticsController extends Controller
 			$reportCategory=$request->report_category;
 			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
 			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','=',$request->submission_period);
+				$reprtObj->where('submission_period','>=',$request->submission_period_from);
+				$reprtObj->where('submission_period','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','=',$request->submission_period);
+				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
+				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','=',$request->submission_period);
+				$reprtObj->where('report_year','>=',$request->submission_period_from);
+				$reprtObj->where('report_year','<=',$request->submission_period_to);
 			}
 			$data=$reprtObj->select('institute_id', DB::raw('SUM(total_assest) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 		}
@@ -105,11 +111,14 @@ class StatisticsController extends Controller
 			$reportCategory=$request->report_category;
 			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
 			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','=',$request->submission_period);
+				$reprtObj->where('submission_period','>=',$request->submission_period_from);
+				$reprtObj->where('submission_period','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','=',$request->submission_period);
+				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
+				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','=',$request->submission_period);
+				$reprtObj->where('report_year','>=',$request->submission_period_from);
+				$reprtObj->where('report_year','<=',$request->submission_period_to);
 			}
 			$data=$reprtObj->select('institute_id', DB::raw('SUM(total_liability) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 		}
@@ -117,11 +126,14 @@ class StatisticsController extends Controller
 			$reportCategory=$request->report_category;
 			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
 			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','=',$request->submission_period);
+				$reprtObj->where('submission_period','>=',$request->submission_period_from);
+				$reprtObj->where('submission_period','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','=',$request->submission_period);
+				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
+				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','=',$request->submission_period);
+				$reprtObj->where('report_year','>=',$request->submission_period_from);
+				$reprtObj->where('report_year','<=',$request->submission_period_to);
 			}
 			$data=$reprtObj->select('institute_id', DB::raw('SUM(loan_advance) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 		}
@@ -129,11 +141,14 @@ class StatisticsController extends Controller
 			$reportCategory=$request->report_category;
 			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
 			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','=',$request->submission_period);
+				$reprtObj->where('submission_period','>=',$request->submission_period_from);
+				$reprtObj->where('submission_period','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','=',$request->submission_period);
+				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
+				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','=',$request->submission_period);
+				$reprtObj->where('report_year','>=',$request->submission_period_from);
+				$reprtObj->where('report_year','<=',$request->submission_period_to);
 			}
 			$data=$reprtObj->select('institute_id', DB::raw('SUM(customer_deposits) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 		}
@@ -142,11 +157,14 @@ class StatisticsController extends Controller
 			$reportCategory=$request->report_category;
 			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
 			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','=',$request->submission_period);
+				$reprtObj->where('submission_period','>=',$request->submission_period_from);
+				$reprtObj->where('submission_period','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','=',$request->submission_period);
+				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
+				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','=',$request->submission_period);
+				$reprtObj->where('report_year','>=',$request->submission_period_from);
+				$reprtObj->where('report_year','<=',$request->submission_period_to);
 			}
 			$data=$reprtObj->select('institute_id', DB::raw('SUM(profit_before_tax) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 		}
@@ -154,11 +172,14 @@ class StatisticsController extends Controller
 			$reportCategory=$request->report_category;
 			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
 			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','=',$request->submission_period);
+				$reprtObj->where('submission_period','>=',$request->submission_period_from);
+				$reprtObj->where('submission_period','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','=',$request->submission_period);
+				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
+				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','=',$request->submission_period);
+				$reprtObj->where('report_year','>=',$request->submission_period_from);
+				$reprtObj->where('report_year','<=',$request->submission_period_to);
 			}
 			$data=$reprtObj->select('institute_id', DB::raw('SUM(return_average_assets) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 		}
@@ -166,16 +187,28 @@ class StatisticsController extends Controller
 			$reportCategory=$request->report_category;
 			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
 			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','=',$request->submission_period);
+				$reprtObj->where('submission_period','>=',$request->submission_period_from);
+				$reprtObj->where('submission_period','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','=',$request->submission_period);
+				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
+				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
 			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','=',$request->submission_period);
+				$reprtObj->where('report_year','>=',$request->submission_period_from);
+				$reprtObj->where('report_year','<=',$request->submission_period_to);
 			}
 			$data=$reprtObj->select('institute_id', DB::raw('SUM(return_equity) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 		}
-
+		$temp=[];
+		//echo "<pre>";
+		//print_r($institutes);
+		//print_r($data->toArray());
+		$keyed=collect($data)->keyBy('institute_id')->all();
+		//print_r($keyed);
+		foreach($institutes as $id=>$name){
+			$temp[$name]=isset($keyed[$id])?$keyed[$id]->total:0;
+		}
 		$return['data']=$data;
+		$return['graph']=$temp;
 		//
 
 		return response()->json($return);

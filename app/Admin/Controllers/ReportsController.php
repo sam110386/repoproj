@@ -505,7 +505,7 @@ SCRIPT;
 	    //$grid->disableActions();
 	    //$grid->disableRefreshButton();
 	    $grid->disableFilter();
-	    $grid->disableRowSelector();
+	    //$grid->disableRowSelector();
 	    //$grid->disableCreateButton();
 	    $grid->id('ID');
 	    $grid->report_category(trans('Report Category'));

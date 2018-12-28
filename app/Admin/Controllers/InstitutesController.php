@@ -251,9 +251,9 @@ SCRIPT;
         $show->panel()
         ->style('danger')
         ->title('Account Details')
-        ->tools(function ($tools) {
+        /*->tools(function ($tools) {
             $tools->prepend(new PdfButton());
-        });
+        })*/;
         $show->name(trans('Name'));
         
         $show->username(trans('username'));
@@ -462,7 +462,7 @@ protected function reportgrid($id)
     //$grid->disableActions();
     //$grid->disableRefreshButton();
     $grid->disableFilter();
-    $grid->disableRowSelector();
+    //$grid->disableRowSelector();
     //$grid->disableCreateButton();
     $grid->id('ID');
     $grid->report_category(trans('Report Category'));
