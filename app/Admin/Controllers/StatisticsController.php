@@ -59,8 +59,8 @@ class StatisticsController extends Controller
 	public function loadchartdata(Request $request){
 		$data=[];
 		$InstitutesObj=Institute::orderBy('id','ASC');
-		if($request->filled('instiute_id')){
-			$InstitutesObj->whereIn('id',$request->instiute_id);
+		if($request->filled('institute_id')){
+			$InstitutesObj->whereIn('id',$request->institute_id);
 		}
 		$institutes=$InstitutesObj->pluck('name','id')->toArray();
 		$return=array('institutes'=>$institutes);
@@ -77,7 +77,25 @@ class StatisticsController extends Controller
 			$data=$InstitutesObj->select('id as institute_id',DB::raw('(boardmember_male+boardmember_female) as total'))->orderBy('id','ASC')->get();
 		}
 		//if total capital is selected
-		if($request->entity_type=='total_capital'){
+
+		if($request->report_category=='TopPerformer'){
+			$reprtObj=DB::table('reports');
+			if($request->report_category=='Monthly'){
+				$reprtObj->where('submission_period','>=',$request->submission_period_from);
+				$reprtObj->where('submission_period','<=',$request->submission_period_to);
+			}elseif($request->report_category=='Quaterly'){
+				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
+				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
+			}
+			$reprtObj->where('report_year','>=',$request->submission_year_from);
+			$reprtObj->where('report_year','<=',$request->submission_year_to);
+			if($request->filled('institute_id')){
+				$reprtObj->whereIn('institute_id',$request->institute_id);
+			}
+
+			$data=$reprtObj->select('institute_id', DB::raw('(SUM(total_capital)+SUM(total_assest)-SUM(total_liability)+SUM(loan_advance)+SUM(customer_deposits)+SUM(profit_before_tax)+SUM(return_average_assets)+SUM(return_equity)) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
+			
+		}elseif($request->report_category=='Monthly'||$request->report_category=='Quaterly'||$request->report_category=='Audited'){
 			$reportCategory=$request->report_category;
 			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
 			if($request->report_category=='Monthly'){
@@ -86,117 +104,50 @@ class StatisticsController extends Controller
 			}elseif($request->report_category=='Quaterly'){
 				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
 				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','>=',$request->submission_period_from);
-				$reprtObj->where('report_year','<=',$request->submission_period_to);
 			}
-			$data=$reprtObj->select('institute_id', DB::raw('SUM(total_capital) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
-		}
-		if($request->entity_type=='total_asset'){
-			$reportCategory=$request->report_category;
-			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
-			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','>=',$request->submission_period_from);
-				$reprtObj->where('submission_period','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
-				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','>=',$request->submission_period_from);
-				$reprtObj->where('report_year','<=',$request->submission_period_to);
+			if($request->report_category=='Audited'){
+				$reprtObj->where('report_year','>=',$request->submission_year_from);
+				$reprtObj->where('report_year','<=',$request->submission_year_to);
+			}else{
+				$reprtObj->where('report_year','>=',$request->submission_year_from);
+				$reprtObj->where('report_year','<=',$request->submission_year_to);
 			}
-			$data=$reprtObj->select('institute_id', DB::raw('SUM(total_assest) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
-		}
-		if($request->entity_type=='total_liability'){
-			$reportCategory=$request->report_category;
-			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
-			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','>=',$request->submission_period_from);
-				$reprtObj->where('submission_period','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
-				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','>=',$request->submission_period_from);
-				$reprtObj->where('report_year','<=',$request->submission_period_to);
+			if($request->filled('institute_id')){
+				$reprtObj->whereIn('institute_id',$request->institute_id);
 			}
-			$data=$reprtObj->select('institute_id', DB::raw('SUM(total_liability) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
-		}
-		if($request->entity_type=='loan_advance'){
-			$reportCategory=$request->report_category;
-			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
-			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','>=',$request->submission_period_from);
-				$reprtObj->where('submission_period','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
-				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','>=',$request->submission_period_from);
-				$reprtObj->where('report_year','<=',$request->submission_period_to);
+			/**if total capital selected**/
+			if($request->entity_type=='total_capital'){
+				$data=$reprtObj->select('institute_id', DB::raw('SUM(total_capital) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 			}
-			$data=$reprtObj->select('institute_id', DB::raw('SUM(loan_advance) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
-		}
-		if($request->entity_type=='customer_deposits'){
-			$reportCategory=$request->report_category;
-			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
-			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','>=',$request->submission_period_from);
-				$reprtObj->where('submission_period','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
-				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','>=',$request->submission_period_from);
-				$reprtObj->where('report_year','<=',$request->submission_period_to);
+			/**if total asset selected**/
+			if($request->entity_type=='total_asset'){
+				$data=$reprtObj->select('institute_id', DB::raw('SUM(total_assest) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 			}
-			$data=$reprtObj->select('institute_id', DB::raw('SUM(customer_deposits) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
-		}
-		
-		if($request->entity_type=='profit_before_tax'){
-			$reportCategory=$request->report_category;
-			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
-			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','>=',$request->submission_period_from);
-				$reprtObj->where('submission_period','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
-				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','>=',$request->submission_period_from);
-				$reprtObj->where('report_year','<=',$request->submission_period_to);
+			/**if total liability selected**/
+			if($request->entity_type=='total_liability'){
+				$data=$reprtObj->select('institute_id', DB::raw('SUM(total_liability) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 			}
-			$data=$reprtObj->select('institute_id', DB::raw('SUM(profit_before_tax) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
-		}
-		if($request->entity_type=='return_average_assets'){
-			$reportCategory=$request->report_category;
-			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
-			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','>=',$request->submission_period_from);
-				$reprtObj->where('submission_period','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
-				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','>=',$request->submission_period_from);
-				$reprtObj->where('report_year','<=',$request->submission_period_to);
+			/**if loan_advance selected**/
+			if($request->entity_type=='loan_advance'){
+				$data=$reprtObj->select('institute_id', DB::raw('SUM(loan_advance) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 			}
-			$data=$reprtObj->select('institute_id', DB::raw('SUM(return_average_assets) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
-		}
-		if($request->entity_type=='return_equity'){
-			$reportCategory=$request->report_category;
-			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
-			if($request->report_category=='Monthly'){
-				$reprtObj->where('submission_period','>=',$request->submission_period_from);
-				$reprtObj->where('submission_period','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Quaterly'){
-				$reprtObj->where('submission_quater','>=',$request->submission_period_from);
-				$reprtObj->where('submission_quater','<=',$request->submission_period_to);
-			}elseif($request->report_category=='Audited'){
-				$reprtObj->where('report_year','>=',$request->submission_period_from);
-				$reprtObj->where('report_year','<=',$request->submission_period_to);
+			/**if customer_deposits selected**/
+			if($request->entity_type=='customer_deposits'){
+				$data=$reprtObj->select('institute_id', DB::raw('SUM(customer_deposits) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 			}
-			$data=$reprtObj->select('institute_id', DB::raw('SUM(return_equity) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
+			/**if profit_before_tax selected**/
+			if($request->entity_type=='profit_before_tax'){
+				$data=$reprtObj->select('institute_id', DB::raw('SUM(profit_before_tax) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
+			}
+			/**if return_average_assets selected**/
+			if($request->entity_type=='return_average_assets'){
+				$data=$reprtObj->select('institute_id', DB::raw('SUM(return_average_assets) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
+			}
+			/**if return_equity selected**/
+			if($request->entity_type=='return_equity'){
+				$data=$reprtObj->select('institute_id', DB::raw('SUM(return_equity) as total'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
+			}
+
 		}
 		$temp=[];
 		//echo "<pre>";

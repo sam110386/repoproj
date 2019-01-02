@@ -55,12 +55,12 @@ class HomeController extends Controller
         $clients=number_format(Institute::sum('client_male')+Institute::sum('client_female'),0,'',',');
         $staff=number_format(Institute::sum('staff_male')+Institute::sum('staff_female'),0,'',',');
         $boardmember=number_format(Institute::sum('boardmember_male')+Institute::sum('boardmember_female'),0,'',',');
-        $institutes=Institute::select( 'id','name',DB::raw( '(client_female+staff_female+boardmember_female) as totalfemail' ),DB::raw( '(client_male+client_female+staff_male+staff_female+boardmember_male+boardmember_female) as total' ), DB::raw( '(client_female+staff_female+boardmember_female)/(client_male+client_female+staff_male+staff_female+boardmember_male+boardmember_female) as ratio' ) )->orderBy('ratio',"DESC")->limit(5)->get();
+        $institutes=Institute::select( 'id','name',DB::raw( '(client_female+staff_female+boardmember_female) as totalfemail' ),DB::raw( '(client_male+client_female+staff_male+staff_female+boardmember_male+boardmember_female) as total' ), DB::raw( '(client_female+staff_female+boardmember_female)/(client_male+client_female+staff_male+staff_female+boardmember_male+boardmember_female) as ratio' ) )->orderBy('ratio',"DESC")->limit(4)->get();
         return view('admin.dashboard.summary',['institutes'=>$institutes,'clients'=>$clients,'staff'=>$staff,'boardmember'=>$boardmember]);
     }
 
     protected function getTopPerformer(){
-        $institutes=Institute::select( 'id','name',DB::raw( '(client_female+staff_female+boardmember_female) as totalfemail' ),DB::raw( '(client_male+client_female+staff_male+staff_female+boardmember_male+boardmember_female) as total' ), DB::raw( '(client_female+staff_female+boardmember_female)/(client_male+client_female+staff_male+staff_female+boardmember_male+boardmember_female) as ratio' ) )->orderBy('ratio',"DESC")->limit(5)->get();
+        $institutes=Institute::select( 'id','name',DB::raw( '(client_female+staff_female+boardmember_female) as totalfemail' ),DB::raw( '(client_male+client_female+staff_male+staff_female+boardmember_male+boardmember_female) as total' ), DB::raw( '(client_female+staff_female+boardmember_female)/(client_male+client_female+staff_male+staff_female+boardmember_male+boardmember_female) as ratio' ) )->orderBy('ratio',"DESC")->limit(4)->get();
         return view('admin.dashboard.topperformer',['institutes'=>$institutes]);
     }
 
