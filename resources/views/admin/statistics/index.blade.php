@@ -96,7 +96,7 @@
                     
                     <div class="row">
                         <div class="col-md-12" id="resultsgraph">
-                            <canvas id="myChart" width="400" height="400"></canvas>
+                            <canvas id="myChart" style="min-height: 650px;min-width:600px;max-height: 650px;max-width: 800px;"></canvas>
                         </div>
                     </div>
                 </div>
@@ -153,7 +153,7 @@
         $("#report_category").val("Monthly").trigger('change');
         setTimeout(function(){
             var dt=new Date();
-            $("#submission_period_from, #submission_period_to").val(dt.getMonth()+1);
+            $("#submission_period_to").val(12);
 
             //setup year
             var today = new Date();
@@ -161,6 +161,7 @@
             for(var i=(years-20);i<=years;i++){
                 $("#submission_year_from, #submission_year_to").append("<option value='"+i+"'>"+i+"</option>");
             }
+            $("#submission_year_to").val(today.getFullYear());
         },200);
         
 
@@ -219,28 +220,28 @@
         datasets: [{
             label: 'Total Capital',
             data: plotdata,
-            borderColor: gradientStroke,
-            pointBorderColor: gradientStroke,
-             pointBackgroundColor: gradientStroke,
-             pointHoverBackgroundColor: gradientStroke,
-             pointHoverBorderColor: gradientStroke,
-             pointBorderWidth: 5,
-             pointHoverRadius: 5,
-             pointHoverBorderWidth: 1,
-             pointRadius: 3,
-             fill: true,
-             fillColor: gradientFill,
-             barStrokeWidth:2,
-            borderWidth: 1
-        }]
+            fill:false,
+            backgroundColor:["rgba(255, 99, 132, 0.2)","rgba(255, 159, 64, 0.2)","rgba(255, 205, 86, 0.2)","rgba(75, 192, 192, 0.2)","rgba(54, 162, 235, 0.2)","rgba(153, 102, 255, 0.2)","rgba(201, 203, 207, 0.2)"],
+            borderColor:["rgb(255, 99, 132)","rgb(255, 159, 64)","rgb(255, 205, 86)","rgb(75, 192, 192)","rgb(54, 162, 235)","rgb(153, 102, 255)","rgb(201, 203, 207)"],
+            fillColor :"rgba(255, 159, 64, 0.5)",
+            strokeColor: "rgba(255, 159, 64, 0.5)",
+            borderWidth:1
+        }],
+        options:{
+            scales:{
+                xAxes:[{ticks:{beginAtZero:true}}]
+            }
+        }
     }
     $(function () {
         var ctx = document.getElementById("myChart").getContext("2d");
         // Global Options:
-        Chart.defaults.global.defaultFontColor = 'orange';
-        Chart.defaults.global.defaultFontSize = 16;
+        //Chart.defaults.global.defaultFontColor = 'orange';
+        //Chart.defaults.global.defaultFontSize = 16;
+        //Chart.defaults.global.barThickness='flex';
+        //Chart.defaults.global.maxBarThickness=0.5;
         var myBarChart = new Chart(ctx).Bar(barChartData, {
-            responsive : true
+            //responsive : true
         });
     });
     
@@ -278,12 +279,12 @@
                 //myBarChart.clear();
             }
             $('#resultsgraph').html('');
-            $('#resultsgraph').append('<canvas id="myChart" width="400" height="400"><canvas>');
+            $('#resultsgraph').append('<canvas id="myChart" style="min-height: 650px;min-width:600px;max-height: 650px;max-width: 800px;"><canvas>');
             var ctx = document.getElementById("myChart").getContext("2d");
             barChartData.labels=label;
             barChartData.datasets[0].data = dta;
             var myBarChart = new Chart(ctx).Bar(barChartData, {
-                responsive : true
+                //responsive : true
             });
         },'json');
     }
