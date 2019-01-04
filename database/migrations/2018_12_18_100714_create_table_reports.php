@@ -19,14 +19,14 @@ class CreateTableReports extends Migration
             $table->integer('submission_period')->unsigned()->default(NULL);
             $table->integer('submission_quater')->unsigned()->default(NULL);
             $table->year('report_year');
-            $table->decimal('total_capital',8, 2);
-            $table->decimal('total_assest',8, 2);
-            $table->decimal('total_liability',8, 2);
-            $table->decimal('loan_advance',8, 2);
-            $table->decimal('customer_deposits',8, 2);
-            $table->decimal('profit_before_tax',8, 2); 
-            $table->decimal('return_average_assets',8, 2); 
-            $table->decimal('return_equity',8, 2);     
+            $table->double('total_capital');
+            $table->double('total_assest');
+            $table->double('total_liability');
+            $table->double('loan_advance');
+            $table->double('customer_deposits');
+            $table->double('profit_before_tax'); 
+            $table->double('return_average_assets'); 
+            $table->double('return_equity');     
             $table->timestamps();  
         });
     }

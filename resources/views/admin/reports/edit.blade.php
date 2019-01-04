@@ -33,7 +33,7 @@
 								<div class="col-sm-7">
 									<div id="show1">
 										<select class="form-control m-bot15" id="submission_period" name="submission_period">
-											<option value=""  >Select</option>
+											<option value="">Select</option>
 										</select>
 									</div>													
 									@if ($errors->has('submission_period'))
@@ -227,9 +227,19 @@
 		        }
 		        
 		    }
+
 	  
 	  });
 		$("#report_category").val("{{$report->report_category}}").trigger('change');
+		setTimeout(function(){
+			if($("#report_category").val()=='Monthly'){
+				$('#submission_period').find('option[value="{{$report->submission_period}}"]').prop('selected', 'selected');/*val("{{$report->submission_period}}").change();*/
+			}else if($("#report_category").val()=='Quaterly'){
+				$('#submission_period').find('option[value="{{$report->submission_quater}}"]').prop('selected', 'selected');/*.val("{{$report->submission_quater}}").change();*/
+			}else if($("#report_category").val()=='Audited'){
+				$('#submission_period').find('option[value="{{$report->report_year}}"]').prop('selected', 'selected');/*.val("{{$report->report_year}}").change();*/
+			}
+		},500);
 	});
 </script>
 

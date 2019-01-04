@@ -474,7 +474,7 @@ protected function reportgrid($id)
             return CommonMethod::getQuarterName($this->submission_quater);
         }
         if($this->report_category=='Audited'){
-            return '';
+            return $this->report_year;;
         }
     });
     //$grid->report_year(trans('Year'));
@@ -544,14 +544,14 @@ public function createreportsave($id,Request $request)
         $valid = request()->validate([
             'report_category' => 'required',
             'submission_period' => 'required',
-            'total_capital' => 'required|nullable|numeric',
-            'total_assest' => 'required|nullable|numeric',
-            'total_liability' => 'required|nullable|numeric',
-            'loan_advance' => 'required|nullable|numeric',
-            'customer_deposits' => 'required|nullable|numeric',
-            'profit_before_tax' => 'required|nullable|numeric',
-            'return_average_assets' => 'required|nullable|numeric',
-            'return_equity' => 'required|nullable|numeric',         
+            'total_capital' => 'required|nullable|numeric|max:9000000000000',
+            'total_assest' => 'required|nullable|numeric|max:9000000000000',
+            'total_liability' => 'required|nullable|numeric|max:9000000000000',
+            'loan_advance' => 'required|nullable|numeric|max:9000000000000',
+            'customer_deposits' => 'required|nullable|numeric|max:9000000000000',
+            'profit_before_tax' => 'required|nullable|numeric|max:9000000000000',
+            'return_average_assets' => 'required|nullable|numeric|max:9000000000000',
+            'return_equity' => 'required|nullable|numeric|max:9000000000000',         
             //'files' => 'mimes:jpeg,png,gif,pdf,doc,docx'
         ]); 
         $data=$request->all();
@@ -591,18 +591,19 @@ public function createreportsave($id,Request $request)
         $report->return_equity = $data['return_equity'];    
 
         if($report->save()){                                
+            if($request->has('files')){
+                foreach ($request->files as $key => $attFiles) {
+                    foreach ($attFiles as $fileData) {              
+                        if($fileData && $fileData->isValid()){
+                            $filename = time().'-'.$fileData->getClientOriginalName();
+                            $file = Storage::disk('user_docuploads')->putFileAs('',$fileData,$filename);
 
-            foreach ($request->files as $key => $attFiles) {
-                foreach ($attFiles as $fileData) {              
-                    if($fileData && $fileData->isValid()){
-                        $filename = time().'-'.$fileData->getClientOriginalName();
-                        $file = Storage::disk('user_docuploads')->putFileAs('',$fileData,$filename);
-
-                        $reportFiles = new ReportsFiles;
-                        $reportFiles->report_id =  $report->id;              
-                        $reportFiles->filename = $file;
-                        $reportFiles->save();       
-                    }                   
+                            $reportFiles = new ReportsFiles;
+                            $reportFiles->report_id =  $report->id;              
+                            $reportFiles->filename = $file;
+                            $reportFiles->save();       
+                        }                   
+                    }
                 }
             }
             /**upload and save image end here***/
@@ -636,14 +637,14 @@ public function editreport($id,$reportid,Content $content)
         $institute = request()->validate([
             'report_category' => 'required',
             'submission_period' => 'required',
-            'total_capital' => 'required|nullable|numeric',
-            'total_assest' => 'required|nullable|numeric',
-            'total_liability' => 'required|nullable|numeric',
-            'loan_advance' => 'required|nullable|numeric',
-            'customer_deposits' => 'required|nullable|numeric',
-            'profit_before_tax' => 'required|nullable|numeric',
-            'return_average_assets' => 'required|nullable|numeric',
-            'return_equity' => 'required|nullable|numeric',
+            'total_capital' => 'required|nullable|numeric|max:9000000000000',
+            'total_assest' => 'required|nullable|numeric|max:9000000000000',
+            'total_liability' => 'required|nullable|numeric|max:9000000000000',
+            'loan_advance' => 'required|nullable|numeric|max:9000000000000',
+            'customer_deposits' => 'required|nullable|numeric|max:9000000000000',
+            'profit_before_tax' => 'required|nullable|numeric|max:9000000000000',
+            'return_average_assets' => 'required|nullable|numeric|max:9000000000000',
+            'return_equity' => 'required|nullable|numeric|max:9000000000000',
         ]);
         $data=$request->all();
         $submission_period = ($data['report_category']=="Monthly")?$data['submission_period']:NULL;
@@ -665,18 +666,19 @@ public function editreport($id,$reportid,Content $content)
         $report->return_equity = $data['return_equity'];    
 
         if($report->save()){                                
+            if($request->has('files')){
+                foreach ($request->files as $key => $attFiles) {
+                    foreach ($attFiles as $fileData) {              
+                        if($fileData && $fileData->isValid()){
+                            $filename = time().'-'.$fileData->getClientOriginalName();
+                            $file = Storage::disk('user_docuploads')->putFileAs('',$fileData,$filename);
 
-            foreach ($request->files as $key => $attFiles) {
-                foreach ($attFiles as $fileData) {              
-                    if($fileData && $fileData->isValid()){
-                        $filename = time().'-'.$fileData->getClientOriginalName();
-                        $file = Storage::disk('user_docuploads')->putFileAs('',$fileData,$filename);
-
-                        $reportFiles = new ReportsFiles;
-                        $reportFiles->report_id =  $report->id;              
-                        $reportFiles->filename = $file;
-                        $reportFiles->save();       
-                    }                   
+                            $reportFiles = new ReportsFiles;
+                            $reportFiles->report_id =  $report->id;              
+                            $reportFiles->filename = $file;
+                            $reportFiles->save();       
+                        }                   
+                    }
                 }
             }
             //notifyt to Admin

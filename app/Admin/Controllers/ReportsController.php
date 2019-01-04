@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Report;
 use App\Models\ReportsFiles;
-
+use App\Admin\Extensions\ReportExpoter;
 class ReportsController extends Controller
 {
 	private $profile;
@@ -68,7 +68,7 @@ class ReportsController extends Controller
 				return CommonMethod::getQuarterName($this->submission_quater);
 			}
 			if($this->report_category=='Audited'){
-				return '';
+				return $this->report_year;
 			}
 		});
 		//$grid->report_year(trans('Year'));
@@ -108,6 +108,7 @@ class ReportsController extends Controller
 				$filter->between('created_at','Created')->datetime();
 			});
 		});
+		$grid->exporter(new ReportExpoter());
 		return $grid;
 	}
 
@@ -137,14 +138,14 @@ class ReportsController extends Controller
         $valid = request()->validate([
 			'report_category' => 'required',
 			'submission_period' => 'required',
-			'total_capital' => 'required|nullable|numeric',
-			'total_assest' => 'required|nullable|numeric',
-			'total_liability' => 'required|nullable|numeric',
-			'loan_advance' => 'required|nullable|numeric',
-			'customer_deposits' => 'required|nullable|numeric',
-			'profit_before_tax' => 'required|nullable|numeric',
-			'return_average_assets' => 'required|nullable|numeric',
-			'return_equity' => 'required|nullable|numeric',			
+			'total_capital' => 'required|nullable|numeric|max:9000000000000',
+			'total_assest' => 'required|nullable|numeric|max:9000000000000',
+			'total_liability' => 'required|nullable|numeric|max:9000000000000',
+			'loan_advance' => 'required|nullable|numeric|max:9000000000000',
+			'customer_deposits' => 'required|nullable|numeric|max:9000000000000',
+			'profit_before_tax' => 'required|nullable|numeric|max:9000000000000',
+			'return_average_assets' => 'required|nullable|numeric|max:9000000000000',
+			'return_equity' => 'required|nullable|numeric|max:9000000000000',			
 			//'files' => 'mimes:jpeg,png,gif,pdf,doc,docx'
 		]);	
 		$submission_period = ($data['report_category']=="Monthly")?$data['submission_period']:NULL;
@@ -182,23 +183,24 @@ class ReportsController extends Controller
 		$report->return_equity = $data['return_equity'];	
 
 		if($report->save()){								
+			if($request->has('files')){
+				foreach ($request->files as $key => $attFiles) {
+					foreach ($attFiles as $fileData) {				
+						if($fileData && $fileData->isValid()){
+							$filename = time().'-'.$fileData->getClientOriginalName();
+							$file = Storage::disk('user_docuploads')->putFileAs('',$fileData,$filename);
 
-			foreach ($request->files as $key => $attFiles) {
-				foreach ($attFiles as $fileData) {				
-					if($fileData && $fileData->isValid()){
-						$filename = time().'-'.$fileData->getClientOriginalName();
-						$file = Storage::disk('user_docuploads')->putFileAs('',$fileData,$filename);
-
-						$reportFiles = new ReportsFiles;
-						$reportFiles->report_id =  $report->id;				 
-						$reportFiles->filename = $file;
-						$reportFiles->save(); 		
-					}					
+							$reportFiles = new ReportsFiles;
+							$reportFiles->report_id =  $report->id;				 
+							$reportFiles->filename = $file;
+							$reportFiles->save(); 		
+						}					
+					}
 				}
 			}
             /**upload and save image end here***/
             admin_success('Success','Institute has been successfully added!');
-            return redirect()->route('Institutes.index');
+            return redirect()->route('Report.index');
         }else{
             admin_error('Error','Something went wrong! Please Try Again.');
             return back();
@@ -216,21 +218,21 @@ class ReportsController extends Controller
         $institute = request()->validate([
             'report_category' => 'required',
 			'submission_period' => 'required',
-			'total_capital' => 'required|nullable|numeric',
-			'total_assest' => 'required|nullable|numeric',
-			'total_liability' => 'required|nullable|numeric',
-			'loan_advance' => 'required|nullable|numeric',
-			'customer_deposits' => 'required|nullable|numeric',
-			'profit_before_tax' => 'required|nullable|numeric',
-			'return_average_assets' => 'required|nullable|numeric',
-			'return_equity' => 'required|nullable|numeric',
+			'total_capital' => 'required|nullable|numeric|max:9000000000000',
+			'total_assest' => 'required|nullable|numeric|max:9000000000000',
+			'total_liability' => 'required|nullable|numeric|max:9000000000000',
+			'loan_advance' => 'required|nullable|numeric|max:9000000000000',
+			'customer_deposits' => 'required|nullable|numeric|max:9000000000000',
+			'profit_before_tax' => 'required|nullable|numeric|max:9000000000000',
+			'return_average_assets' => 'required|nullable|numeric|max:9000000000000',
+			'return_equity' => 'required|nullable|numeric|max:9000000000000',
         ]);
         $data=$request->all();
         $submission_period = ($data['report_category']=="Monthly")?$data['submission_period']:NULL;
 		$submission_quater = ($data['report_category']=="Quaterly")?$data['submission_period']:NULL;		
 		$report_year = ($data['report_category']=="Audited")?$data['submission_period']:NULL;
 		
-		$report =  Report::find($data['id']);
+		$report =  Report::find($id);
 		$report->report_category = $data['report_category'];
 		$report->submission_period = $submission_period ;
 		$report->submission_quater = $submission_quater ;
@@ -245,25 +247,26 @@ class ReportsController extends Controller
 		$report->return_equity = $data['return_equity'];	
 
 		if($report->save()){								
+			if($request->has('files')){
+				foreach ($request->files as $key => $attFiles) {
+					foreach ($attFiles as $fileData) {				
+						if($fileData && $fileData->isValid()){
+							$filename = time().'-'.$fileData->getClientOriginalName();
+							$file = Storage::disk('user_docuploads')->putFileAs('',$fileData,$filename);
 
-			/*foreach ($request->files as $key => $attFiles) {
-				foreach ($attFiles as $fileData) {				
-					if($fileData && $fileData->isValid()){
-						$filename = time().'-'.$fileData->getClientOriginalName();
-						$file = Storage::disk('user_docuploads')->putFileAs('',$fileData,$filename);
-
-						$reportFiles = new ReportsFiles;
-						$reportFiles->report_id =  $report->id;				 
-						$reportFiles->filename = $file;
-						$reportFiles->save(); 		
-					}					
+							$reportFiles = new ReportsFiles;
+							$reportFiles->report_id =  $report->id;				 
+							$reportFiles->filename = $file;
+							$reportFiles->save(); 		
+						}					
+					}
 				}
-			}*/
+			}
 			//notifyt to Admin
 			//$this->notifytoadmin($profile, $data);
 
 			admin_success('Success','Report has been successfully updated!');
-            return redirect()->route('Institutes.index');
+            return redirect()->route('Report.index');
         }else{
             admin_error('Error','Something went wrong! Please Try Again.');
             return back();
@@ -273,8 +276,8 @@ class ReportsController extends Controller
     /**delete**/
     public function destroy($id)
     {   
-    	if(Report::destroy($reportid)){
-            ReportsFiles::where('report_id', $reportid)->delete();
+    	if(Report::destroy($id)){
+            ReportsFiles::where('report_id', $id)->delete();
             $res = ['status' => true, 'message' => 'Report has been removed.'];
         }else{
             $res = ['status' => false, 'message' => 'Something went wrong!'];
@@ -517,7 +520,7 @@ SCRIPT;
 	            return CommonMethod::getQuarterName($this->submission_quater);
 	        }
 	        if($this->report_category=='Audited'){
-	            return '';
+	            return $this->report_year;
 	        }
 	    });
 	    //$grid->report_year(trans('Year'));
