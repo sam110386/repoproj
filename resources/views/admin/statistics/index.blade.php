@@ -89,7 +89,7 @@
                             </div>
                             <div class="col-md-2">
                                 <button name="refresh" id="refresh" type="button" class="btn btn-success" onclick="refreshchart()">Refresh</button>
-                                <button name="print" id="print" type="button" class="btn btn-danger" onclick="printDiv('resultsgraph')">Print</button>
+                                <button name="print" id="print" type="button" class="btn btn-danger" onclick="printDiv()">Print</button>
                             </div>
                         </div>
                     </form>
@@ -246,7 +246,7 @@
     
 </script>
 <script type="text/javascript">
-    function printDiv(divName) {
+    function printDiv() {
          var canvas = document.getElementById("myChart");
         var win = window.open();
         win.document.write("<br><img src='" + canvas.toDataURL() + "'/>");
