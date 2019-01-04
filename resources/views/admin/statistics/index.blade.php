@@ -249,9 +249,20 @@
     function printDiv() {
          var canvas = document.getElementById("myChart");
         var win = window.open();
-        win.document.write("<br><img src='" + canvas.toDataURL() + "'/>");
-        win.print();
-        win.close();
+        win.document.write("<img src='" + canvas.toDataURL() + "' style='max-height:900px;max-width:800px;height:auto;width:auto;'/>");
+        var is_chrome = function () { return Boolean(window.chrome); }
+        if(is_chrome) 
+        {
+           setTimeout(function(){win.print();}, 1000); 
+           setTimeout(function(){win.close();}, 1000); 
+           //give them 10 seconds to print, then close
+        }
+        else
+        {
+            win.print();
+            win.close();
+        }
+        
     }
     function refreshchart(){
         var formdata=$("#statisticform").serialize();
