@@ -137,7 +137,8 @@ class ReportsController extends Controller
     {   
         $valid = request()->validate([
 			'report_category' => 'required',
-			'submission_period' => 'required',
+			'submission_period' => 'nullable|numeric',
+			'report_year'=>'required',
 			'total_capital' => 'required|nullable|numeric|max:9000000000000',
 			'total_assest' => 'required|nullable|numeric|max:9000000000000',
 			'total_liability' => 'required|nullable|numeric|max:9000000000000',
@@ -146,11 +147,11 @@ class ReportsController extends Controller
 			'profit_before_tax' => 'required|nullable|numeric|max:9000000000000',
 			'return_average_assets' => 'required|nullable|numeric|max:9000000000000',
 			'return_equity' => 'required|nullable|numeric|max:9000000000000',			
-			//'files' => 'mimes:jpeg,png,gif,pdf,doc,docx'
+			'files.*' => 'mimes:jpeg,png,gif,pdf,doc,docx|max:5000'
 		]);	
 		$submission_period = ($data['report_category']=="Monthly")?$data['submission_period']:NULL;
 		$submission_quater = ($data['report_category']=="Quaterly")?$data['submission_period']:NULL;		
-		$report_year = ($data['report_category']=="Audited")?$data['submission_period']:NULL;
+		$report_year = $data['report_year'];//($data['report_year']=="Audited")?$data['submission_period']:NULL;
 		
 		//check if already submitted
 		$existObj=Report::where('institute_id','=',$data['institute_id'])->where('report_category','=',$data['report_category']);
@@ -160,9 +161,9 @@ class ReportsController extends Controller
 		if($data['report_category']=="Quaterly"){
 			$existObj->where('submission_quater','=',$data['submission_period']);
 		}
-		if($data['report_category']=="Audited"){
-			$existObj->where('report_year','=',$data['submission_period']);
-		}
+		//if($data['report_category']=="Audited"){
+			$existObj->where('report_year','=',$report_year);
+		//}
 		if($existObj->exists()){
 			//echo "<pre>";print_r($$existObj->get());die;
 			return back()->with('error','Report already submitted for selected period');	
@@ -183,7 +184,7 @@ class ReportsController extends Controller
 		$report->return_equity = $data['return_equity'];	
 
 		if($report->save()){								
-			if($request->has('files')){
+			if($request->hasfile('files')){
 				foreach ($request->files as $key => $attFiles) {
 					foreach ($attFiles as $fileData) {				
 						if($fileData && $fileData->isValid()){
@@ -217,7 +218,8 @@ class ReportsController extends Controller
 
         $institute = request()->validate([
             'report_category' => 'required',
-			'submission_period' => 'required',
+			'submission_period' => 'nullable|numeric',
+			'report_year'=>'required',
 			'total_capital' => 'required|nullable|numeric|max:9000000000000',
 			'total_assest' => 'required|nullable|numeric|max:9000000000000',
 			'total_liability' => 'required|nullable|numeric|max:9000000000000',
@@ -226,11 +228,12 @@ class ReportsController extends Controller
 			'profit_before_tax' => 'required|nullable|numeric|max:9000000000000',
 			'return_average_assets' => 'required|nullable|numeric|max:9000000000000',
 			'return_equity' => 'required|nullable|numeric|max:9000000000000',
+			'files.*' => 'mimes:jpeg,png,gif,pdf,doc,docx|max:5000'
         ]);
         $data=$request->all();
         $submission_period = ($data['report_category']=="Monthly")?$data['submission_period']:NULL;
 		$submission_quater = ($data['report_category']=="Quaterly")?$data['submission_period']:NULL;		
-		$report_year = ($data['report_category']=="Audited")?$data['submission_period']:NULL;
+		$report_year =$data['report_year'];// ($data['report_category']=="Audited")?$data['submission_period']:NULL;
 		
 		$report =  Report::find($id);
 		$report->report_category = $data['report_category'];

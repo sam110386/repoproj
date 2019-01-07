@@ -543,7 +543,8 @@ public function createreportsave($id,Request $request)
     {   
         $valid = request()->validate([
             'report_category' => 'required',
-            'submission_period' => 'required',
+            'submission_period' => 'nullable|numeric',
+            'report_year'=>'required',
             'total_capital' => 'required|nullable|numeric|max:9000000000000',
             'total_assest' => 'required|nullable|numeric|max:9000000000000',
             'total_liability' => 'required|nullable|numeric|max:9000000000000',
@@ -552,12 +553,12 @@ public function createreportsave($id,Request $request)
             'profit_before_tax' => 'required|nullable|numeric|max:9000000000000',
             'return_average_assets' => 'required|nullable|numeric|max:9000000000000',
             'return_equity' => 'required|nullable|numeric|max:9000000000000',         
-            //'files' => 'mimes:jpeg,png,gif,pdf,doc,docx'
+            'files.*' => 'nullable|mimes:jpeg,png,gif,pdf,doc,docx|size:1024'
         ]); 
         $data=$request->all();
         $submission_period = ($data['report_category']=="Monthly")?$data['submission_period']:NULL;
         $submission_quater = ($data['report_category']=="Quaterly")?$data['submission_period']:NULL;        
-        $report_year = ($data['report_category']=="Audited")?$data['submission_period']:NULL;
+        $report_year = $data['report_year'];//($data['report_category']=="Audited")?$data['submission_period']:NULL;
         
         //check if already submitted
         $existObj=Report::where('institute_id','=',$id)->where('report_category','=',$data['report_category']);
@@ -567,11 +568,11 @@ public function createreportsave($id,Request $request)
         if($data['report_category']=="Quaterly"){
             $existObj->where('submission_quater','=',$data['submission_period']);
         }
-        if($data['report_category']=="Audited"){
-            $existObj->where('report_year','=',$data['submission_period']);
-        }
+        //if($data['report_category']=="Audited"){
+            $existObj->where('report_year','=',$report_year);
+        //}
         if($existObj->exists()){
-            echo "<pre>";print_r($existObj->get());die;
+            
             admin_error('Error','Report already submitted for selected period');
             return back()->with('Error','Report already submitted for selected period');    
         }
@@ -591,7 +592,7 @@ public function createreportsave($id,Request $request)
         $report->return_equity = $data['return_equity'];    
 
         if($report->save()){                                
-            if($request->has('files')){
+            if($request->hasfile('files')){
                 foreach ($request->files as $key => $attFiles) {
                     foreach ($attFiles as $fileData) {              
                         if($fileData && $fileData->isValid()){
@@ -636,7 +637,8 @@ public function editreport($id,$reportid,Content $content)
 
         $institute = request()->validate([
             'report_category' => 'required',
-            'submission_period' => 'required',
+            'submission_period' => 'nullable|numeric',
+            'report_year'=>'required',
             'total_capital' => 'required|nullable|numeric|max:9000000000000',
             'total_assest' => 'required|nullable|numeric|max:9000000000000',
             'total_liability' => 'required|nullable|numeric|max:9000000000000',
@@ -645,11 +647,12 @@ public function editreport($id,$reportid,Content $content)
             'profit_before_tax' => 'required|nullable|numeric|max:9000000000000',
             'return_average_assets' => 'required|nullable|numeric|max:9000000000000',
             'return_equity' => 'required|nullable|numeric|max:9000000000000',
+            'files.*' => 'mimes:jpeg,png,gif,pdf,doc,docx|max:5000'
         ]);
         $data=$request->all();
         $submission_period = ($data['report_category']=="Monthly")?$data['submission_period']:NULL;
         $submission_quater = ($data['report_category']=="Quaterly")?$data['submission_period']:NULL;        
-        $report_year = ($data['report_category']=="Audited")?$data['submission_period']:NULL;
+        $report_year =$data['report_year'];// ($data['report_category']=="Audited")?$data['submission_period']:NULL;
         
         $report =  Report::find($data['id']);
         $report->report_category = $data['report_category'];

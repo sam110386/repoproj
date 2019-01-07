@@ -15,13 +15,14 @@
 					{{ csrf_field() }}
 					<div class="form-group">
 						<label for="name" class="col-sm-2 control-label">Report Category</label>
-						<div class="col-sm-8">							
+						<div class="col-sm-2 control-label">							
 							{{$report->report_category}}
 						</div>
 					</div>
+					@if($report->report_category!="Audited")
 					<div class="form-group ">
 						<label for="submission_period" class="col-sm-2 control-label">Submission Period</label>
-						<div class="col-sm-8">
+						<div class="col-sm-2 control-label">
 							@if ($report->report_category=="Monthly")							
 							{{$report->submission_period}}
 							@endif
@@ -33,51 +34,58 @@
 							@endif
 						</div>
 					</div>
+					@endif
+					<div class="form-group ">
+						<label for="report_year" class="col-sm-2 control-label">Submission Year</label>
+						<div class="col-sm-2 control-label">
+							{{$report->report_year}}
+						</div>
+					</div>
 					<div class="form-group ">
 						<label for="total_capital" class="col-sm-2 control-label">Total capital #</label>
-						<div class="col-sm-8">
+						<div class="col-sm-2 control-label">
 							{{$report->total_capital}}
 						</div>
 					</div>					
 					<div class="form-group ">
 						<label for="total_assest" class="col-sm-2 control-label">Total Assets</label>
-						<div class="col-sm-8">
+						<div class="col-sm-2 control-label">
 							{{$report->total_assest}}
 						</div>
 					</div>
 					<div class="form-group ">
 						<label for="total_liability" class="col-sm-2 control-label">Total Liability</label>
-						<div class="col-sm-8">
+						<div class="col-sm-2 control-label">
 							{{$report->total_liability}}
 						</div>
 					</div>
 					<div class="form-group ">
 						<label for="loan_advance" class="col-sm-2 control-label">Loans & advances</label>
-						<div class="col-sm-8">
+						<div class="col-sm-2 control-label">
 							{{$report->loan_advance}}
 						</div>
 					</div>
 					<div class="form-group ">
 						<label for="customer_deposits" class="col-sm-2 control-label">Customer deposits</label>
-						<div class="col-sm-8">
+						<div class="col-sm-2 control-label">
 							{{$report->customer_deposits}}
 						</div>
 					</div>	
 					<div class="form-group ">
 						<label for="profit_before_tax" class="col-sm-2 control-label">Profit before tax</label>
-						<div class="col-sm-8">
+						<div class="col-sm-2 control-label">
 							{{$report->profit_before_tax}}
 						</div>
 					</div>	
 					<div class="form-group ">
-						<label for="zipcode" class="col-sm-2 control-label">Return on average assets (in %)</label>
-						<div class="col-sm-8">
+						<label for="return_average_assets" class="col-sm-2 control-label">Return on average assets (in %)</label>
+						<div class="col-sm-2 control-label">
 							{{$report->return_average_assets}}
 						</div>
 					</div>	
 					<div class="form-group ">
 						<label for="equity" class="col-sm-2 control-label">Return on equity (%)</label>
-						<div class="col-sm-8">
+						<div class="col-sm-2 control-label">
 							{{$report->return_equity}}
 						</div>
 					</div>						

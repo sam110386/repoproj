@@ -1,5 +1,15 @@
 @extends('layouts.app')
 @section('content')
+@if (count($errors) > 0)
+      <div class="alert alert-danger">
+        <strong>Whoops!</strong> There were some problems with your input.<br><br>
+        <ul>
+          @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+      @endif
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-primary">	
@@ -54,6 +64,23 @@
 									@if ($errors->has('submission_period'))
 									<span class="help-block">
 										<strong>{{ $errors->first('submission_period') }}</strong>
+									</span>
+									@endif
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group {{ $errors->has('report_year') ? ' has-error' : '' }}">
+								<label for="report_year" class="col-sm-5 control-label">Submission Year</label>
+								<div class="col-sm-7">
+									<div id="show1">
+										<select class="form-control m-bot15" id="report_year" name="report_year">
+											<option value="">Select</option>
+										</select>
+									</div>													
+									@if ($errors->has('report_year'))
+									<span class="help-block">
+										<strong>{{ $errors->first('report_year') }}</strong>
 									</span>
 									@endif
 								</div>
@@ -163,8 +190,7 @@
 								</div>
 							</div>						
 						</div>
-					</div>	
-					<div class="row">
+					
 						<div class="col-md-6">
 							<div class="form-group ">
 								<label for="files" class="col-sm-5 control-label">Financial Report</label>
@@ -206,5 +232,18 @@
 	</div>
 </div>	
 </div>
-
+<script type="text/javascript">
+	setTimeout(function(){
+		$("#report_year").val("{{old('report_year')}}");
+	},600);
+</script>
+@php
+if(old('report_category')=='Audited'){ @endphp
+	<script type="text/javascript">
+	setTimeout(function(){
+		$('#submission_period').attr('disabled',true);
+	},600);
+</script>
+@php }
+@endphp
 @endsection

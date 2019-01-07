@@ -1,3 +1,13 @@
+@if (count($errors) > 0)
+      <div class="alert alert-danger">
+        <strong>Whoops!</strong> There were some problems with your input.<br><br>
+        <ul>
+          @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+      @endif
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-primary">	
@@ -52,6 +62,23 @@
 									@if ($errors->has('submission_period'))
 									<span class="help-block">
 										<strong>{{ $errors->first('submission_period') }}</strong>
+									</span>
+									@endif
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group {{ $errors->has('report_year') ? ' has-error' : '' }}">
+								<label for="report_year" class="col-sm-5 control-label">Submission Year</label>
+								<div class="col-sm-7">
+									<div id="show1">
+										<select class="form-control m-bot15" id="report_year" name="report_year">
+											<option value="">Select</option>
+										</select>
+									</div>													
+									@if ($errors->has('report_year'))
+									<span class="help-block">
+										<strong>{{ $errors->first('report_year') }}</strong>
 									</span>
 									@endif
 								</div>
@@ -209,6 +236,7 @@
 		$("#report_category").change(function() {
 		    var el = $(this) ;    
 		    if(el.val() === "Monthly" ) {
+		    	$('#submission_period').attr('disabled',false);
 				$('#submission_period').find('option:not(:first)').remove();
 				$("#submission_period").append("<option value='1'>January</option>");
 				$("#submission_period").append("<option value='2'>February</option>");
@@ -223,7 +251,8 @@
 				$("#submission_period").append("<option value='11'>November</option>");
 				$("#submission_period").append("<option value='12'>December</option>");	
 		    }
-		    else if(el.val() === "Quaterly" ) {		
+		    else if(el.val() === "Quaterly" ) {
+		    	$('#submission_period').attr('disabled',false);
 				$('#submission_period').find('option:not(:first)').remove();
 		        $("#submission_period").append("<option value='1'>Q1</option>");
 		        $("#submission_period").append("<option value='2'>Q2</option>");
@@ -231,6 +260,7 @@
 		        $("#submission_period").append("<option value='4'>Q4</option>");
 		    }
 		    else if(el.val() === "Audited" ) {
+		    	$('#submission_period').attr('disabled',true);
 		        $('#submission_period').find('option:not(:first)').remove();
 		        var today = new Date();
 		        var years=today.getFullYear();
@@ -241,6 +271,24 @@
 		    }
 	  
 	  });
+	var today = new Date();
+    var years=today.getFullYear();
+    for(var i=(years-20);i<=years;i++){
+        $("#report_year").append("<option value='"+i+"'>"+i+"</option>");
+    }
 	});
 </script>
-
+<script type="text/javascript">
+	setTimeout(function(){
+		$("#report_year").val("{{old('report_year')}}");
+	},600);
+</script>
+@php
+if(old('report_category')=='Audited'){ @endphp
+	<script type="text/javascript">
+	setTimeout(function(){
+		$('#submission_period').attr('disabled',true);
+	},600);
+</script>
+@php }
+@endphp
