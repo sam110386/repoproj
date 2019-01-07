@@ -312,13 +312,13 @@ class ReportsController extends Controller
     {
     	$script = <<<SCRIPT
 
-        window.onload = function () {
+        $(function () {
 		    jQuery('.trigger').click(function(){
 		    	var filename=jQuery(this).attr('rel-file');
 		    	jQuery("#myModal .modal-body").find('iframe').attr('src','/uploads/user/doc/'+filename);
 		    	jQuery("#myModal").modal('show');
 		    }); 
-	    }
+	    });
 SCRIPT;
         Admin::script($script); 
         $show = new Show(Report::findOrFail($id));
