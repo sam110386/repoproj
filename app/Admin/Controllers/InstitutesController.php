@@ -119,6 +119,7 @@ class InstitutesController extends Controller
             'logo' => 'nullable|image|max:1000|dimensions:min_width=150,min_height=150|mimes:jpeg,png,gif'
         ]);
         $data=$request->all();
+
         if(!empty($data['password'])){
             $data['password'] = bcrypt($data['password']);
         }else{
@@ -132,6 +133,7 @@ class InstitutesController extends Controller
             $data['logo'] = $file;
         }
         /**upload and save image end here***/
+        
         if(Institute::findOrFail($id)->update($data)){
             admin_success('Success','Institute has been successfully updated!');
             return redirect()->route('Institutes.index');

@@ -6,6 +6,12 @@
 
 
 		<div class="register-box-body">
+			@if(session('error'))
+			<div class="alert alert-dismissible alert-danger">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				{{session('error')}}
+			</div>
+			@endif
 			<p class="login-box-msg">Register a new membership</p>
 
 			<form action="{{ route('register') }}" method="post">

@@ -1,0 +1,22 @@
+ .login-page, .register-page {
+    background: #ffffff;
+}
+.login-logo, .register-logo {
+    font-size: 35px;
+    text-align: center;
+    padding: 20px;
+    font-weight: 300;
+    background: #3180c2;
+    margin-bottom: 0;
+}
+.login-box-body, .register-box-body {
+    background: #3180c2;
+    padding: 20px;
+    border-top: 0;
+    color: #fff;
+}
+.login-box-body a{color:#fff;}
+.skin-blue-light .main-header .logo{background: #3180c2;}
+.skin-blue-light .main-header .navbar {
+    background-color: #3180c2;
+}

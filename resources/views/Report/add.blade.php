@@ -40,36 +40,6 @@
 							</div>
 						</div>
 						<div class="col-md-6">
-							<div class="form-group {{ $errors->has('submission_period') ? ' has-error' : '' }}">
-								<label for="submission_period" class="col-sm-5 control-label">Submission Period</label>
-								<div class="col-sm-7">
-									<div id="show1">
-										<select class="form-control m-bot15" id="submission_period" name="submission_period">									  
-											<option value=""  >Select</option>
-											<option value="1" {{(old('submission_period')=='1')?'selected':''}}>January</option>
-											<option value="2" {{(isset($report) && $report->submission_period=='2')?'selected':''}}>February</option>
-											<option value="3" {{(old('submission_period')=='3')?'selected':''}}>March</option>	
-											<option value="4" {{(old('submission_period')=='4')?'selected':''}}>April</option>	
-											<option value="5" {{(old('submission_period')=='5')?'selected':''}}>May</option>	
-											<option value="6" {{(old('submission_period')=='6')?'selected':''}}>June</option>	
-											<option value="7" {{(old('submission_period')=='7')?'selected':''}}>July</option>	
-											<option value="8" {{(old('submission_period')=='8')?'selected':''}}>August</option>	
-											<option value="9" {{(old('submission_period')=='9')?'selected':''}}>September</option>	
-											<option value="10" {{(old('submission_period')=='10')?'selected':''}}>October</option>	
-											<option value="11" {{(old('submission_period')=='11')?'selected':''}}>November</option>	
-											<option value="12" {{(old('submission_period')=='12')?'selected':''}}>December</option>								 
-
-										</select>
-									</div>													
-									@if ($errors->has('submission_period'))
-									<span class="help-block">
-										<strong>{{ $errors->first('submission_period') }}</strong>
-									</span>
-									@endif
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6">
 							<div class="form-group {{ $errors->has('report_year') ? ' has-error' : '' }}">
 								<label for="report_year" class="col-sm-5 control-label">Submission Year</label>
 								<div class="col-sm-7">
@@ -86,6 +56,24 @@
 								</div>
 							</div>
 						</div>
+						<div class="col-md-6">
+							<div class="form-group {{ $errors->has('submission_period') ? ' has-error' : '' }}">
+								<label for="submission_period" class="col-sm-5 control-label">Submission Period</label>
+								<div class="col-sm-7">
+									<div id="show1">
+										<select class="form-control m-bot15" id="submission_period" name="submission_period">									  
+											<option value=""  >Select</option>
+										</select>
+									</div>													
+									@if ($errors->has('submission_period'))
+									<span class="help-block">
+										<strong>{{ $errors->first('submission_period') }}</strong>
+									</span>
+									@endif
+								</div>
+							</div>
+						</div>
+						
 						<div class="col-md-6">
 							<div class="form-group {{ $errors->has('total_capital') ? ' has-error' : '' }}">
 								<label for="total_capital" class="col-sm-5 control-label">Total capital #</label>

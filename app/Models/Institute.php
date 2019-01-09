@@ -23,7 +23,8 @@ class Institute extends Authenticatable
         'staff_male',
         'staff_female',
         'boardmember_male',
-        'boardmember_female'
+        'boardmember_female',
+        'status'
     ];
 
 

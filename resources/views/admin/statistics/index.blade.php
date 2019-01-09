@@ -1,4 +1,6 @@
-
+<style type="text/css">
+    #resultsgraph{margin-left: 20px;}
+</style>
 <div class="row">
     <div class="col-md-12">
         <div class="box">
@@ -225,7 +227,8 @@
             borderColor:["rgb(255, 99, 132)","rgb(255, 159, 64)","rgb(255, 205, 86)","rgb(75, 192, 192)","rgb(54, 162, 235)","rgb(153, 102, 255)","rgb(201, 203, 207)"],
             fillColor :"rgba(255, 159, 64, 0.5)",
             strokeColor: "rgba(255, 159, 64, 0.5)",
-            borderWidth:1
+            borderWidth:1,
+
         }],
         options:{
             scales:{
@@ -284,7 +287,21 @@
             barChartData.labels=label;
             barChartData.datasets[0].data = dta;
             var myBarChart = new Chart(ctx).Bar(barChartData, {
-                //responsive : true
+                tooltips: {
+                    callbacks: {
+                        title: function(tooltipItem, data) {
+                          return data['labels'][tooltipItem[0]['index']];
+                          },
+                          label: function(tooltipItem, data) {
+                              return data['datasets'][0]['data'][tooltipItem['index']];
+                          },
+                          afterLabel: function(tooltipItem, data) {
+                              var dataset = data['datasets'][0];
+                              var percent = Math.round((dataset['data'][tooltipItem['index']] / dataset["_meta"][0]['total']) * 100)
+                              return '(' + percent + '%)';
+                          }
+                      }
+                  }
             });
         },'json');
     }

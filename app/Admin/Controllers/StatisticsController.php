@@ -33,7 +33,7 @@ class StatisticsController extends Controller
 	 */
 	public function index(Content $content)
 	{	
-		$Institutes=Institute::orderBy('id','ASC')->pluck('name','id')->toArray();
+		$Institutes=Institute::where('status','=',1)->orderBy('id','ASC')->pluck('name','id')->toArray();
 		//report data
 		$reprts=DB::table('reports')->where('report_category','=',"Monthly")->where('submission_period','=',date('m'))->where('report_year','=',date('Y'))->select('institute_id', DB::raw('SUM(total_capital) as total_capital'))->orderBy('institute_id','ASC')->groupBy('institute_id')->get();
 		
@@ -48,7 +48,7 @@ class StatisticsController extends Controller
 	{
 	     $q= $request->get('q');
 	     if(!empty($q) && !$q){
-	        return Institute::where('name', 'like', "%$q%")->orWhere('phone', 'like', "%$q%")->paginate(null, ['id', 'name']);
+	        return Institute::where('status','=',1)->where('name', 'like', "%$q%")->orWhere('phone', 'like', "%$q%")->paginate(null, ['id', 'name']);
 	    }else{
 	        return Institute::orderBy('name','ASC')->paginate(null, ['id', 'name']);
 	    }
@@ -58,11 +58,12 @@ class StatisticsController extends Controller
 	/***function to get Chart Data***/
 	public function loadchartdata(Request $request){
 		$data=[];
-		$InstitutesObj=Institute::orderBy('id','ASC');
+		$InstitutesObj=Institute::where('status','=',1)->orderBy('id','ASC');
 		if($request->filled('institute_id')){
 			$InstitutesObj->whereIn('id',$request->institute_id);
 		}
 		$institutes=$InstitutesObj->pluck('name','id')->toArray();
+		$validInstitutes=array_keys($institutes);
 		$return=array('institutes'=>$institutes);
 		//if client selected
 		if($request->entity_type=='clients'){
@@ -79,7 +80,7 @@ class StatisticsController extends Controller
 		//if total capital is selected
 
 		if($request->report_category=='TopPerformer'){
-			$reprtObj=DB::table('reports');
+			$reprtObj=DB::table('reports')->whereIn('institute_id',$validInstitutes);
 			if($request->report_category=='Monthly'){
 				$reprtObj->where('submission_period','>=',$request->submission_period_from);
 				$reprtObj->where('submission_period','<=',$request->submission_period_to);
@@ -97,7 +98,7 @@ class StatisticsController extends Controller
 			
 		}elseif($request->report_category=='Monthly'||$request->report_category=='Quaterly'||$request->report_category=='Audited'){
 			$reportCategory=$request->report_category;
-			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory);
+			$reprtObj=DB::table('reports')->where('report_category','=',$reportCategory)->whereIn('institute_id',$validInstitutes);
 			if($request->report_category=='Monthly'){
 				$reprtObj->where('submission_period','>=',$request->submission_period_from);
 				$reprtObj->where('submission_period','<=',$request->submission_period_to);

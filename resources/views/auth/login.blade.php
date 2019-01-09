@@ -1,8 +1,17 @@
 @extends('layouts.default')
 @section('content')
+
 <!--div class="login-page"-->
 	<div class="login-box ">
 		<div class="login-box-body panel-body ">
+			@if(session('error'))
+			<div class="alert alert-dismissible alert-danger">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				{{session('error')}}
+			</div>
+			@endif
+
+	
 			<p class="login-box-msg">Sign In</p>
 
 			<form action="{{ route('login') }}" method="post">
