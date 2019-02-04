@@ -78,8 +78,8 @@ class ReportsController extends Controller
 		$grid->loan_advance(trans('Loan Advance'));
 		$grid->customer_deposits(trans('Customer Deposits'));
 		$grid->profit_before_tax(trans('Profit Exc Tax'));
-		$grid->return_average_assets(trans('Return Ave Assets'));
-		$grid->return_equity(trans('Return Equity'));
+		$grid->return_average_assets(trans('Return Ave Assets %'));
+		$grid->return_equity(trans('Return Equity %'));
 
 		/*$grid->created_at(trans('Created'))->display(function($date){
 			return CommonMethod::formatDate($date);

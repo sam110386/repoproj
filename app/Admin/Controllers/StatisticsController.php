@@ -65,17 +65,21 @@ class StatisticsController extends Controller
 		$institutes=$InstitutesObj->pluck('name','id')->toArray();
 		$validInstitutes=array_keys($institutes);
 		$return=array('institutes'=>$institutes);
+
 		//if client selected
 		if($request->entity_type=='clients'){
-			$data=$InstitutesObj->select('id as institute_id',DB::raw('(client_male+client_female) as total'))->orderBy('id','ASC')->get();
+			// $data=$InstitutesObj->select('id as institute_id',DB::raw('(client_male+client_female) as total'))->orderBy('id','ASC')->get();
+			$data=$InstitutesObj->select('id as institute_id','client_male as male','client_female as female',DB::raw('(client_male+client_female) as total'))->orderBy('id','ASC')->get();
 		}
+
 		//if staff selected
 		if($request->entity_type=='staff'){
-			$data=$InstitutesObj->select('id as institute_id',DB::raw('(staff_male+staff_female) as total'))->orderBy('id','ASC')->get();
+			// $data=$InstitutesObj->select('id as institute_id',DB::raw('(staff_male+staff_female) as total'))->orderBy('id','ASC')->get();
+			$data=$InstitutesObj->select('id as institute_id','staff_male as male','staff_female as female',DB::raw('(staff_male+staff_female) as total'))->orderBy('id','ASC')->get();
 		}
 		//if board member selected
 		if($request->entity_type=='board_members'){
-			$data=$InstitutesObj->select('id as institute_id',DB::raw('(boardmember_male+boardmember_female) as total'))->orderBy('id','ASC')->get();
+			$data=$InstitutesObj->select('id as institute_id','boardmember_male as male','boardmember_female as female',DB::raw('(boardmember_male+boardmember_female) as total'))->orderBy('id','ASC')->get();
 		}
 		//if total capital is selected
 
@@ -156,9 +160,17 @@ class StatisticsController extends Controller
 		//print_r($data->toArray());
 		$keyed=collect($data)->keyBy('institute_id')->all();
 		//print_r($keyed);
+		$mf= false;
 		foreach($institutes as $id=>$name){
-			$temp[$name]=isset($keyed[$id])?$keyed[$id]->total:0;
+			if(isset($keyed[$id]->male) && isset($keyed[$id]->female)){
+				$mf = true;
+				$temp[$name.' Male ']=$keyed[$id]->male;
+				$temp[$name.' Female ']=$keyed[$id]->female;
+			}else{
+				$temp[$name]=isset($keyed[$id])?$keyed[$id]->total:0;
+			}
 		}
+		$return['mf'] = $mf;
 		$return['data']=$data;
 		$return['graph']=$temp;
 		//
