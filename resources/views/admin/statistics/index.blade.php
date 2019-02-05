@@ -287,7 +287,7 @@ function refreshchart(){
             $('#resultsgraph').append('<canvas id="myChart" style="min-height: 650px;min-width:600px;max-height: 650px;max-width: 800px;"></canvas>');
             var ctx = document.getElementById("myChart").getContext("2d");
             if(reponse.mf){
-                var helpText = "<div id='chart-help-area' class='col-md-12'><span style='float:left;margin:25px;'><i style='float:left;width:20px;height:20px;background-color:rgb(0,0,255,0.5);    margin-right: 5px;'></i>Male</span> <span style='float:left;margin:25px;'><i style='float:left;width:20px;height:20px;background-color:rgb(255,20,147,0.5);margin-right: 5px;'></i>Female</span></div>";
+                var helpText = "<div id=\"chart-help-area\" class=\"col-md-12\"><span style=\"float:left;margin:25px;\"><i style=\"float:left;width:20px;height:20px;background-color:rgb(0,0,255,0.5);    margin-right: 5px;\"></i>Male</span> <span style=\"float:left;margin:25px;\"><i style=\"float:left;width:20px;height:20px;background-color:rgb(255,20,147,0.5);margin-right: 5px;\"></i>Female</span></div>";
                 $('#resultsgraph').after(helpText);
                 var labels = [];
                 var datasets = [];
