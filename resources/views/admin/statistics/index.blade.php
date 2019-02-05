@@ -1,5 +1,5 @@
 <style type="text/css">
-    #resultsgraph{margin-left: 20px;}
+#resultsgraph{margin-left: 20px;}
 </style>
 <div class="row">
     <div class="col-md-12">
@@ -205,7 +205,7 @@
             cache: true
         },
         escapeMarkup: function (markup) {return markup;}
-        });
+    });
     });
     
 </script>
@@ -223,10 +223,10 @@
             label: 'Total Capital',
             data: plotdata,
             fill:false,
-            backgroundColor:["rgba(255, 99, 132, 0.2)","rgba(255, 159, 64, 0.2)","rgba(255, 205, 86, 0.2)","rgba(75, 192, 192, 0.2)","rgba(54, 162, 235, 0.2)","rgba(153, 102, 255, 0.2)","rgba(201, 203, 207, 0.2)"],
-            borderColor:["rgb(255, 99, 132)","rgb(255, 159, 64)","rgb(255, 205, 86)","rgb(75, 192, 192)","rgb(54, 162, 235)","rgb(153, 102, 255)","rgb(201, 203, 207)"],
-            fillColor :"rgba(255, 159, 64, 0.5)",
-            strokeColor: "rgba(255, 159, 64, 0.5)",
+            backgroundColor:"rgb(0,0,255,0.5)",
+            borderColor:"rgb(0,0,255,0.9)",
+            fillColor :"rgb(0,0,255,0.5)",
+            strokeColor: "rgba(0, 0, 255, 0.5)",
             borderWidth:1,
 
         }],
@@ -251,25 +251,25 @@
 </script>
 <script type="text/javascript">
     function printDiv() {
-         var canvas = document.getElementById("myChart");
-        var win = window.open();
-        win.document.write("<img src='" + canvas.toDataURL() + "' style='max-height:900px;max-width:800px;height:auto;width:auto;'/>");
-        var is_chrome = function () { return Boolean(window.chrome); }
-        if(is_chrome) 
-        {
-           setTimeout(function(){win.print();}, 1000); 
-           setTimeout(function(){win.close();}, 1000); 
+       var canvas = document.getElementById("myChart");
+       var win = window.open();
+       win.document.write("<img src='" + canvas.toDataURL() + "' style='max-height:900px;max-width:800px;height:auto;width:auto;'/>");
+       var is_chrome = function () { return Boolean(window.chrome); }
+       if(is_chrome) 
+       {
+         setTimeout(function(){win.print();}, 1000); 
+         setTimeout(function(){win.close();}, 1000); 
            //give them 10 seconds to print, then close
-        }
-        else
-        {
-            win.print();
-            win.close();
-        }
-        
+       }
+       else
+       {
+        win.print();
+        win.close();
     }
-    function refreshchart(){
-        var formdata=$("#statisticform").serialize();
+
+}
+function refreshchart(){
+    var formdata=$("#statisticform").serialize();
         //alert(JSON.stringify(formdata));
         $.post('/admin/statistics/loadchartdata',formdata,function(reponse,myBarChart){
             var label=[],dta=[];
@@ -281,28 +281,55 @@
             if (typeof myBarChart != 'undefined') {
                 //myBarChart.clear();
             }
+            $('#chart-help-area').remove();
             $('#resultsgraph').html('');
-            $('#resultsgraph').append('<canvas id="myChart" style="min-height: 650px;min-width:600px;max-height: 650px;max-width: 800px;"><canvas>');
+
+            $('#resultsgraph').append('<canvas id="myChart" style="min-height: 650px;min-width:600px;max-height: 650px;max-width: 800px;"></canvas>');
             var ctx = document.getElementById("myChart").getContext("2d");
-            barChartData.labels=label;
-            barChartData.datasets[0].data = dta;
-            var myBarChart = new Chart(ctx).Bar(barChartData, {
-                tooltips: {
-                    callbacks: {
-                        title: function(tooltipItem, data) {
-                          return data['labels'][tooltipItem[0]['index']];
-                          },
-                          label: function(tooltipItem, data) {
-                              return data['datasets'][0]['data'][tooltipItem['index']];
-                          },
-                          afterLabel: function(tooltipItem, data) {
-                              var dataset = data['datasets'][0];
-                              var percent = Math.round((dataset['data'][tooltipItem['index']] / dataset["_meta"][0]['total']) * 100)
-                              return '(' + percent + '%)';
-                          }
-                      }
-                  }
-            });
+            if(reponse.mf){
+                var helpText = "<div id='chart-help-area' class='col-md-12'><span style='float:left;margin:25px;'><i style='float:left;width:20px;height:20px;background-color:rgb(0,0,255,0.5);    margin-right: 5px;'></i>Male</span> <span style='float:left;margin:25px;'><i style='float:left;width:20px;height:20px;background-color:rgb(255,20,147,0.5);margin-right: 5px;'></i>Female</span></div>";
+                $('#resultsgraph').after(helpText);
+                var labels = [];
+                var datasets = [];
+                var maleData = [];
+                var femaleData = [];
+
+                $.each(reponse.institutes,function(i,ins){
+                    labels.push(ins);
+                });
+
+                reponse.data.map(function(i){
+                    maleData.push(i.male);
+                    femaleData.push(i.female);
+                });
+                datasets = [{
+                    label: 'Male',
+                    backgroundColor: "rgb(0,0,255,0.5)",
+                    borderColor: "rgb(0,0,255,0.9)",
+                    fillColor :"rgba(0, 0, 255, 0.5)",
+                    borderWidth: 1,
+                    data: maleData
+                },{
+                    label: 'Female',
+                    backgroundColor: "rgba(255, 20, 147, 0.5)",
+                    borderColor: "rgba(255, 20, 147, 0.9)",
+                    fillColor :"rgba(255, 20, 147, 0.5)",
+                    borderWidth: 1,
+                    data: femaleData    
+                }];
+                var chartData = {
+                    labels: labels,
+                    datasets: datasets,
+                }
+                var barChartOptions = {
+                    legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>'
+                }
+                new Chart(ctx).Bar(chartData,barChartOptions);
+            }else{
+                barChartData.labels=label;
+                barChartData.datasets[0].data = dta;
+                var myBarChart = new Chart(ctx).Bar(barChartData);
+            }
         },'json');
     }
 </script>
