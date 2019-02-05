@@ -98,8 +98,9 @@
                     
                     <div class="row">
                         <div class="col-md-12" id="resultsgraph">
-                            <canvas id="myChart" style="min-height: 650px;min-width:600px;max-height: 650px;max-width: 800px;"></canvas>
+                            <canvas id="myChart" style="min-height: 650px;min-width:600px;max-height: 650px;max-width:800px;"></canvas>
                         </div>
+                        <div id="charthelparea" class="col-md-12" style="display:none;"><span style="float:left;margin:25px;"><i style="float:left;width:20px;height:20px;background-color:rgb(0,0,255,0.5);margin-right: 5px;"></i>Male</span> <span style="float:left;margin:25px;"><i style="float:left;width:20px;height:20px;background-color:rgb(255,20,147,0.5);margin-right: 5px;"></i>Female</span></div>
                     </div>
                 </div>
             </div>
@@ -270,8 +271,7 @@
 }
 function refreshchart(){
     var formdata=$("#statisticform").serialize();
-        //alert(JSON.stringify(formdata));
-        $.post('/admin/statistics/loadchartdata',formdata,function(reponse,myBarChart){
+    $.post('/admin/statistics/loadchartdata',formdata,function(reponse,myBarChart){
             var label=[],dta=[];
             /*$.each(reponse.institutes,function(i,v){label.push(v)});
             $.each(reponse.data,function(i,v){dta.push(v.total)});*/
@@ -281,14 +281,13 @@ function refreshchart(){
             if (typeof myBarChart != 'undefined') {
                 //myBarChart.clear();
             }
-            $('#chart-help-area').remove();
+            $('#charthelparea').hide();
             $('#resultsgraph').html('');
 
             $('#resultsgraph').append('<canvas id="myChart" style="min-height: 650px;min-width:600px;max-height: 650px;max-width: 800px;"></canvas>');
             var ctx = document.getElementById("myChart").getContext("2d");
             if(reponse.mf){
-                var helpText = "<div id=\"chart-help-area\" class=\"col-md-12\"><span style=\"float:left;margin:25px;\"><i style=\"float:left;width:20px;height:20px;background-color:rgb(0,0,255,0.5);    margin-right: 5px;\"></i>Male</span> <span style=\"float:left;margin:25px;\"><i style=\"float:left;width:20px;height:20px;background-color:rgb(255,20,147,0.5);margin-right: 5px;\"></i>Female</span></div>";
-                $('#resultsgraph').after(helpText);
+                $('#charthelparea').show();
                 var labels = [];
                 var datasets = [];
                 var maleData = [];
