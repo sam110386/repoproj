@@ -305,12 +305,12 @@ SCRIPT;
         $grid->disableExport();
         $grid->id('ID')->sortable();
         $grid->name(trans('Institute Name'));
-        $grid->client_male(trans('Client(M)'));
-        $grid->client_female(trans('Client(F)'));
-        $grid->staff_male(trans('Staff(M)'));
-        $grid->staff_female(trans('Staff(F)'));
-        $grid->boardmember_male(trans('Board Member(M)'));
-        $grid->boardmember_female(trans('Board Member(F)'));
+        $grid->client_male(trans('Client('.Institute::sum('client_male').' M)'));
+        $grid->client_female(trans('Client( '.Institute::sum('client_female').'F)'));
+        $grid->staff_male(trans('Staff('.Institute::sum('staff_male').'M)'));
+        $grid->staff_female(trans('Staff('.Institute::sum('staff_female').'F)'));
+        $grid->boardmember_male(trans('Board Member('.Institute::sum('boardmember_male').'M)'));
+        $grid->boardmember_female(trans('Board Member('.Institute::sum('boardmember_female').'F)'));
         
         $grid->updated_at(trans('Updated'))->sortable()->display(function($date){
             return CommonMethod::formatDateWithTime($date);
